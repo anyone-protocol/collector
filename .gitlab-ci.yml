@@ -13,7 +13,6 @@ test:
   - apt -y install default-jdk ant ivy git curl
   - git submodule init
   - git submodule update
-  - mkdir lib
   - ant fetch-metrics-lib
   - ant -lib /usr/share/java resolve
   - ant test
