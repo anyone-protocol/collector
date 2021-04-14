@@ -10,7 +10,6 @@
 /stats/
 /tarballs/
 /generated
-/lib
 cobertura.ser
 *~
 build.properties
