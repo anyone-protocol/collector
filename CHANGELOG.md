@@ -6,7 +6,7 @@
   - Correctly index files that are moved away and back.
   - Include microdescriptors, certs, and OnionPerf analysis files when
     syncing from another CollecTor instance.
-  - Update to metrics-lib 2.15.0.
+  - Update to metrics-lib 2.16.0.
 
 
 # Changes in version 1.16.1 - 2020-08-16
