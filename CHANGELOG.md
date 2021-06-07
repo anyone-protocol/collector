@@ -1,3 +1,7 @@
+# Changes in version 1.xx.x - xxxx-xx-xx
+
+ * Medium changes
+
 # Changes in version 1.17.0 - 2021-05-06
 
  * Medium changes
