@@ -207,24 +207,29 @@ public class SanitizedBridgeServerDescriptor
           /* Write the following lines unmodified to the sanitized
            * descriptor. */
         } else if (line.startsWith("accept ")
-            || line.startsWith("platform ")
-            || line.startsWith("opt protocols ")
-            || line.startsWith("protocols ")
-            || line.startsWith("proto ")
-            || line.startsWith("uptime ")
-            || line.startsWith("bandwidth ")
-            || line.startsWith("opt hibernating ")
-            || line.startsWith("hibernating ")
-            || line.startsWith("ntor-onion-key ")
-            || line.equals("opt hidden-service-dir")
-            || line.equals("hidden-service-dir")
-            || line.equals("opt caches-extra-info")
-            || line.equals("caches-extra-info")
-            || line.equals("opt allow-single-hop-exits")
-            || line.equals("allow-single-hop-exits")
-            || line.startsWith("ipv6-policy ")
-            || line.equals("tunnelled-dir-server")
-            || line.startsWith("bridge-distribution-request ")) {
+                || line.startsWith("platform ")
+                || line.startsWith("opt protocols ")
+                || line.startsWith("protocols ")
+                || line.startsWith("proto ")
+                || line.startsWith("uptime ")
+                || line.startsWith("bandwidth ")
+                || line.startsWith("opt hibernating ")
+                || line.startsWith("hibernating ")
+                || line.startsWith("ntor-onion-key ")
+                || line.equals("opt hidden-service-dir")
+                || line.equals("hidden-service-dir")
+                || line.equals("opt caches-extra-info")
+                || line.equals("caches-extra-info")
+                || line.equals("opt allow-single-hop-exits")
+                || line.equals("allow-single-hop-exits")
+                || line.startsWith("ipv6-policy ")
+                || line.equals("tunnelled-dir-server")
+                || line.startsWith("bridge-distribution-request ")) {
+          scrubbed.append(line).newLine();
+
+          /* Write the following lines unmodified to the sanitized
+           * descriptor, also depending on the version number. */
+        } else if (line.startsWith("overload-general 1 ")) {
           scrubbed.append(line).newLine();
 
           /* Replace node fingerprints in the family line with their hashes

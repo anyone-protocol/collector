@@ -143,6 +143,12 @@ public class SanitizedBridgeExtraInfoDescriptor
         } else if (line.startsWith("router-sig-ed25519 ")) {
           continue;
 
+          /* Write the following lines unmodified to the sanitized
+           * descriptor, also depending on the version number. */
+        } else if (line.startsWith("overload-ratelimits 1 ")
+                || line.startsWith("overload-fd-exhausted 1 ")) {
+          scrubbed.append(line).newLine();
+
           /* If we encounter an unrecognized line, stop parsing and print
            * out a warning. We might have overlooked sensitive information
            * that we need to remove or replace for the sanitized descriptor
