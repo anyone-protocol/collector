@@ -83,7 +83,13 @@ public enum Key {
   BridgedbMetricsPeriodMinutes(Integer.class),
   BridgedbMetricsSources(SourceType[].class),
   BridgedbMetricsLocalOrigins(Path.class),
-  BridgedbMetricsSyncOrigins(URL[].class);
+  BridgedbMetricsSyncOrigins(URL[].class),
+  BridgestrapStatsActivated(Boolean.class),
+  BridgestrapStatsOffsetMinutes(Integer.class),
+  BridgestrapStatsPeriodMinutes(Integer.class),
+  BridgestrapStatsUrl(URL.class),
+  BridgestrapStatsSources(SourceType[].class),
+  BridgestrapStatsSyncOrigins(URL[].class);
 
   private Class clazz;
   private static Set<String> keys;

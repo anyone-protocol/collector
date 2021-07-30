@@ -6,6 +6,7 @@ package org.torproject.metrics.collector;
 import org.torproject.metrics.collector.bridgedb.BridgedbMetricsProcessor;
 import org.torproject.metrics.collector.bridgedescs.SanitizedBridgesWriter;
 import org.torproject.metrics.collector.bridgepools.BridgePoolAssignmentsProcessor;
+import org.torproject.metrics.collector.bridgestrap.BridgestrapStatsDownloader;
 import org.torproject.metrics.collector.conf.Configuration;
 import org.torproject.metrics.collector.conf.ConfigurationException;
 import org.torproject.metrics.collector.conf.Key;
@@ -64,6 +65,8 @@ public class Main {
         SnowflakeStatsDownloader.class);
     collecTorMains.put(Key.BridgedbMetricsActivated,
         BridgedbMetricsProcessor.class);
+    collecTorMains.put(Key.BridgestrapStatsActivated,
+        BridgestrapStatsDownloader.class);
   }
 
   private static Configuration conf = new Configuration();

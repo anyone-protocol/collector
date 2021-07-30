@@ -44,6 +44,7 @@ public class Configuration {
         || this.getBool(Key.BridgedescsActivated)
         || this.getBool(Key.BridgePoolAssignmentsActivated)
         || this.getBool(Key.BridgedbMetricsActivated)
+        || this.getBool(Key.BridgestrapStatsActivated)
         || this.getBool(Key.ExitlistsActivated)
         || this.getBool(Key.UpdateindexActivated)
         || this.getBool(Key.OnionPerfActivated)
