@@ -3,8 +3,6 @@
 
 package org.torproject.metrics.collector.bridgestrap;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.torproject.descriptor.BridgestrapStats;
 import org.torproject.descriptor.Descriptor;
 import org.torproject.descriptor.DescriptorParser;
@@ -17,6 +15,9 @@ import org.torproject.metrics.collector.cron.CollecTorMain;
 import org.torproject.metrics.collector.downloader.Downloader;
 import org.torproject.metrics.collector.persist.BridgestrapStatsPersistence;
 import org.torproject.metrics.collector.persist.PersistenceUtils;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -88,7 +89,8 @@ public class BridgestrapStatsDownloader extends CollecTorMain {
         downloadedBytes, null, null)) {
       if (descriptor instanceof BridgestrapStats) {
         BridgestrapStats bridgestrapStats = (BridgestrapStats) descriptor;
-        LocalDateTime bridgestrapStatsEnd = bridgestrapStats.bridgestrapStatsEnd();
+        LocalDateTime bridgestrapStatsEnd =
+            bridgestrapStats.bridgestrapStatsEnd();
         bridgestrapStatsEnds.add(bridgestrapStatsEnd);
         BridgestrapStatsPersistence persistence
             = new BridgestrapStatsPersistence(bridgestrapStats);
