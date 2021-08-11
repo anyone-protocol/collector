@@ -1,6 +1,10 @@
-# Changes in version 1.xx.x - xxxx-xx-xx
+# Changes in version 1.18.0 - 2021-08-11
 
  * Medium changes
+   - Keep overload-* lines unmodified in sanitised bridge descriptors.
+   - Introduces a new module to archive bridgestrap results.
+   - Update metrics-lib to 2.18.0.
+
 
 # Changes in version 1.17.0 - 2021-05-06
 
