@@ -1,3 +1,8 @@
+# Changes in version 1.xx.x - 2021-xx-xx
+
+* Medium changes
+
+
 # Changes in version 1.18.0 - 2021-08-11
 
  * Medium changes
