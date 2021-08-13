@@ -1,7 +1,9 @@
-# Changes in version 1.xx.x - 2021-xx-xx
+# Changes in version 1.18.1 - 2021-08-13
 
-* Medium changes
-
+ * Minor changes
+   - Extract published timestamp for bridgestrap results in the indexer
+     task.
+ 
 
 # Changes in version 1.18.0 - 2021-08-11
 
