@@ -7,6 +7,7 @@ import org.torproject.descriptor.BandwidthFile;
 import org.torproject.descriptor.BridgeNetworkStatus;
 import org.torproject.descriptor.BridgePoolAssignment;
 import org.torproject.descriptor.BridgedbMetrics;
+import org.torproject.descriptor.BridgestrapStats;
 import org.torproject.descriptor.Descriptor;
 import org.torproject.descriptor.DescriptorSourceFactory;
 import org.torproject.descriptor.DirectoryKeyCertificate;
@@ -156,6 +157,9 @@ class IndexerTask implements Callable<FileNode> {
       } else if (descriptor instanceof BridgedbMetrics) {
         publishedMillis = ((BridgedbMetrics) descriptor)
             .bridgedbMetricsEnd().toInstant(ZoneOffset.UTC).toEpochMilli();
+      } else if (descriptor instanceof BridgestrapStats) {
+        publishedMillis = ((BridgestrapStats) descriptor)
+            .bridgestrapStatsEnd().toInstant(ZoneOffset.UTC).toEpochMilli();
       } else if (descriptor instanceof DirectoryKeyCertificate) {
         publishedMillis = ((DirectoryKeyCertificate) descriptor)
             .getDirKeyPublishedMillis();
