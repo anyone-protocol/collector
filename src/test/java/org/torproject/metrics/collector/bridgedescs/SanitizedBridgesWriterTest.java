@@ -191,7 +191,8 @@ public class SanitizedBridgesWriterTest {
         "extra-info-digest B026CF0F81712D94BBF1362294882688DF247887 "
             + "/XWPeILeik+uTGaKL3pnUeQfYS87SfjKVkwTiCmbqi0",
         "hidden-service-dir",
-        "contact somebody",
+        "contact jvictors at jessevictors com, PGP 0xC20BEC80, BTC "
+            + "1M6tuPXNmhbgSfaJqnxBUAf5tKi4TVhup8",
         "ntor-onion-key YjZG5eaQ1gmXvlSMGEBwM7OLswv8AtXZr6ccOnDUKQw=",
         "reject *:*",
         "router-digest-sha256 "
@@ -854,4 +855,3 @@ public class SanitizedBridgesWriterTest {
         this.parsedNetworkStatuses.isEmpty());
   }
 }
-
