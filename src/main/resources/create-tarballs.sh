@@ -111,18 +111,25 @@ DIRECTORIES=($(printf "%s\n" "${DIRECTORIES[@]}" | uniq))
 
 for (( i = 0 ; i < ${#TARBALLS[@]} ; i++ )); do
   if [ ! -d ${TARBALLS[$i]} ]; then
-    echo `date` "Creating symlink for" ${TARBALLS[$i]} 
+    echo `date` "Creating symlink for" ${TARBALLS[$i]}
     ln -s ${DIRECTORIES[$i]} ${TARBALLS[$i]}
   else
     # This is a workaround for the "tar u" bug in GNU tar 1.20
-    echo `date` "Touching symlink and directories for" ${TARBALLS[$i]} 
+    echo `date` "Touching symlink and directories for" ${TARBALLS[$i]}
     find -L ${TARBALLS[$i]} -type d | xargs touch
   fi
 done
 
+# N is a parameter that describes the number of tarballs that are created in
+# parallel.
+
+N=2
 for (( i = 0 ; i < ${#TARBALLS[@]} ; i++ )); do
-  echo `date` "Creating" ${TARBALLS[$i]}'.tar.xz'
-  tar -I "xz -9e" -c -h -f ${TARBALLS[$i]}.tar.xz ${TARBALLS[$i]}
+  ((j=j%N)); ((j++==0)) && wait
+  {
+    echo `date` "Creating" ${TARBALLS[$i]}'.tar.xz'
+    tar -I "xz -9e" -c -h -f ${TARBALLS[$i]}.tar.xz ${TARBALLS[$i]}
+  } &
 done
 
 cd $OUTDIR/webstats/
