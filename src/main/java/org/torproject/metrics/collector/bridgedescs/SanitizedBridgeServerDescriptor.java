@@ -115,7 +115,7 @@ public class SanitizedBridgeServerDescriptor
           }
           scrubbed.newLine();
 
-          /* Replace the contact line (if present) with a generic one. */
+          /* Add the contact line (if present). */
         } else if (line.startsWith("contact ")) {
           scrubbed.append(line).newLine();
 
