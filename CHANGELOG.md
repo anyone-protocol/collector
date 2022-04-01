@@ -1,9 +1,15 @@
+# Changes in version 1.18.2 - 2022-03-31
+
+ * Medium changes
+   - Stop sanitizing contact info for bridges.
+
+
 # Changes in version 1.18.1 - 2021-08-13
 
  * Minor changes
    - Extract published timestamp for bridgestrap results in the indexer
      task.
- 
+
 
 # Changes in version 1.18.0 - 2021-08-11
 
@@ -380,4 +386,3 @@
  * Major changes
    - This is the initial release after over six and a half years of
      development.
-
