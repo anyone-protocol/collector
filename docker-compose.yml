@@ -1,0 +1,17 @@
+version: '2.2'
+services:
+  jar:
+    image: collector-build
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./collector-data/out/:/srv/collector.torproject.org/collector/out
+      - ./collector-data/htdocs/:/srv/collector.torproject.org/collector/htdocs
+      - ./collector-data/stats/:/srv/collector.torproject.org/collector/stats
+      - ./collector-data/tarballs/:/srv/collector.torproject.org/collector/tarballs
+      - ./collector-data/indexed/recent/:/srv/collector.torproject.org/collector/indexed/recent
+      - ./collector-data/indexed/index/:/srv/collector.torproject.org/collector/indexed/index
+      - ./collector-data/indexed/archive/:/srv/collector.torproject.org/collector/indexed/archive
+      - ./collector-data/logs/:/srv/collector.torproject.org/collector/LOGBASE_IS_UNDEFINED
+      - ./collector.properties:/srv/collector.torproject.org/collector/collector.properties
+

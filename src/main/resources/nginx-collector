@@ -16,13 +16,16 @@ server {
 
   # You can change the specified servername. If you leave it as it is you will
   # need to add an entry on /etc/hosts for collector
-  server_name collector;
+  # server_name collector;
+
+  listen 0.0.0.0:9000;
 
   location / {
-    fancyindex on;
-    fancyindex_exact_size off;
-    fancyindex_header /header.html;
-    fancyindex_footer /footer.html;
+    # todo - fix fancy index module in nginx
+    # fancyindex on;
+    # fancyindex_exact_size off;
+    # fancyindex_header /header.html;
+    # fancyindex_footer /footer.html;
     try_files $uri $uri/ =404;
   }
 
@@ -30,4 +33,3 @@ server {
     deny all;
   }
 }
-

@@ -16,3 +16,5 @@ build.properties
 /index/
 
 /.idea/
+/collector-data
+*.iml
