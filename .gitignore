@@ -16,3 +16,4 @@ build.properties
 /index/
 
 /.idea/
+*.iml
