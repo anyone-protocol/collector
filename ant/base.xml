@@ -1,0 +1,351 @@
+<!-- xml-snippets to be inserted in Metrics Java Projects -->
+<!-- It's a snippet, i.e. not valid xml in itself.        -->
+
+  <!-- generic properties -->
+  <property name="buildresources" value="src/build/java" />
+  <property name="sources" value="src/main/java"/>
+  <property name="libs" value="lib"/>
+  <property name="generated" value="generated"/>
+  <property name="resources" value="src/main/resources"/>
+  <property name="dist" value="${generated}/dist"/>
+  <property name="classes" value="${generated}/classes/"/>
+  <property name="docs" value="${generated}/javadoc"/>
+  <property name="testsources" value="src/test/java"/>
+  <property name="testresources" value="src/test/resources/"/>
+  <property name="testresult" value="${generated}/test-results"/>
+  <property name="testclasses" value="${generated}/testclasses/"/>
+  <property name="jarfile" value="${name}-${release.version}.jar" />
+  <property name="jarthinfile"
+            value="${name}-${release.version}-thin.jar" />
+  <property name="jarsourcesfile"
+            value="${name}-${release.version}-sources.jar" />
+  <property name="jardocsfile"
+            value="${name}-${release.version}-javadoc.jar" />
+  <property name="source-and-target-java-version" value="1.8" />
+  <property name="release.tarball"
+            value="${dist}/${name}-${release.version}.tar.gz" />
+  <property file="build.properties" />
+  <property name="emptymanifest" value="${generated}/emptymanifest" />
+  <property name="javadocstyle" value="${basedir}/src/build/java/stylesheet.css" />
+  <property name="javadocicon" value="${basedir}/src/build/java/tor-onion.png" />
+  <property name="downloadedlibs" value="${generated}/downloaded-libs" />
+
+  <!-- generic path definitions -->
+  <path id="classpath">
+    <pathelement path="${classes}"/>
+    <fileset dir="${libs}">
+      <patternset refid="runtime" />
+    </fileset>
+  </path>
+
+  <path id="test.classpath">
+    <pathelement path="${classes}"/>
+    <pathelement path="${resources}"/>
+    <pathelement path="${testclasses}"/>
+    <pathelement path="${testresources}"/>
+    <fileset dir="${libs}">
+      <patternset refid="runtime" />
+    </fileset>
+    <fileset dir="${libs}">
+      <include name="junit-4.12.jar"/>
+      <include name="hamcrest-all-1.3.jar"/>
+      <include name="logback-core-1.1.9.jar" />
+      <include name="logback-classic-1.1.9.jar" />
+      <include name="mockito-core-1.10.19.jar" />
+      <include name="objenesis-3.3.jar" />
+    </fileset>
+  </path>
+
+  <path id="checkstyle.classpath" >
+    <fileset dir="${libs}">
+      <include name="antlr-2.7.7.jar" />
+      <include name="antlr4-runtime-4.5.2-1.jar" />
+      <include name="checkstyle-6.17.jar" />
+      <include name="commons-beanutils-1.9.2.jar" />
+      <include name="commons-collections-3.2.1.jar" />
+      <include name="commons-logging-1.1.3.jar" />
+      <include name="guava-19.0.jar" />
+    </fileset>
+  </path>
+
+  <!-- target definitions -->
+  
+  <target name="clean" >
+    <delete includeEmptyDirs="true" quiet="true">
+      <fileset dir="${generated}" defaultexcludes="false" includes="**" />
+    </delete>
+  </target>
+
+  <target name="usage">
+    <echo message="The main ant targets are:" />
+    <echo message="'clean' removes all generated files." />
+    <echo message="'resolve' resolves and retrieves external dependencies with Ivy." />
+    <echo message="'compile' compiles sources to ${classes}." />
+    <echo message="'test' runs all tests (see ${testresult})." />
+    <echo message="'docs' creates all javadoc in ${docs}." />
+    <echo message="'checks' checks coding style (see ${generated}/checkstyle_report.txt)." />
+    <echo message="'tar' creates a release tarball in ${dist}." />
+  </target>
+
+  <target name="submoduleupdate" >
+    <exec executable="git" failonerror="false">
+      <arg value="submodule" />
+      <arg value="update" />
+      <arg value="--remote" />
+      <arg value="--merge" />
+    </exec>
+  </target>
+
+  <target name="init" depends="submoduleupdate" >
+    <mkdir dir="${classes}"/>
+    <mkdir dir="${testclasses}"/>
+    <mkdir dir="${docs}"/>
+    <mkdir dir="${testresult}"/>
+    <mkdir dir="${dist}"/>
+    <mkdir dir="${libs}"/>
+    <manifest file="${emptymanifest}" />
+  </target>
+
+  <target name="resolve"
+          description="Resolve and retrieve external dependencies with Ivy">
+    <ivy:resolve file="${buildresources}/ivy.xml" />
+    <ivy:retrieve />
+    <ivy:report todir="${generated}/ivy" />
+  </target>
+
+  <target name="fetch-metrics-lib" depends="init"
+          description="Fetch metrics-lib from dist.torproject.org">
+    <mkdir dir="${downloadedlibs}"/>
+    <get src="https://dist.torproject.org/metrics-lib/${metricslibversion}/metrics-lib-${metricslibversion}.tar.gz"
+         dest="${downloadedlibs}"/>
+    <untar src="${downloadedlibs}/metrics-lib-${metricslibversion}.tar.gz"
+           dest="${libs}" compression="gzip">
+      <patternset>
+        <include name="**/metrics-lib-${metricslibversion}-thin.jar"/>
+      </patternset>
+      <mapper type="flatten"/>
+    </untar>
+  </target>
+
+  <target name="compile"
+          depends="init">
+    <javac destdir="${classes}"
+           srcdir="${sources}"
+           source="${source-and-target-java-version}"
+           target="${source-and-target-java-version}"
+           encoding="UTF-8"
+           debug="true"
+           deprecation="true"
+           optimize="false"
+           failonerror="true"
+           includeantruntime="false">
+      <classpath refid="classpath"/>
+    </javac>
+  </target>
+
+  <target name="testcompile" depends="init">
+    <javac destdir="${testclasses}"
+           srcdir="${testsources}"
+           source="${source-and-target-java-version}"
+           target="${source-and-target-java-version}"
+           debug="true"
+           deprecation="true"
+           optimize="false"
+           failonerror="true"
+           includeantruntime="false">
+      <classpath refid="test.classpath"/>
+    </javac>
+  </target>
+
+  <target name="docs" depends="gitrev, compile" >
+    <tstamp>
+      <format property="copyyear"
+              pattern="yyyy"
+              timezone="UTC" />
+    </tstamp>
+    <condition property="headline"
+               value="${implementation-title} ${release.version}.${git.revision} API Documentation"
+               else="${implementation-title} ${release.version} API Documentation" >
+      <contains string="${release.version}" substring="-dev" />
+    </condition>
+    <javadoc destdir="${docs}"
+             stylesheetfile="${javadocstyle}"
+             footer="&amp;copy; ${copyyear} The Tor Project"
+             doctitle="${headline}"
+             overview="${basedir}/${resources}/overview.html"
+             use="true"
+             windowtitle="${javadoc-title}">
+      <classpath>
+        <path refid="classpath"/>
+        <pathelement location="${classes}"/>
+      </classpath>
+      <fileset dir="${sources}" excludes="${javadoc-excludes}"/>
+    </javadoc>
+    <copy file="${javadocicon}" todir="${docs}"/>
+  </target>
+
+  <target name="test" depends="compile,testcompile">
+    <junit fork="true"
+           haltonfailure="true"
+           printsummary="on">
+      <jvmarg value="-DLOGBASE=${generated}/test-logs"/>
+      <jvmarg value="-Dlogback.configurationFile=${buildresources}/logback.xml" />
+      <jvmarg value="-Duser.country=US" />
+      <jvmarg value="-Duser.timezone=UTC" />
+      <classpath refid="test.classpath"/>
+      <formatter type="plain" usefile="false"/>
+      <batchtest>
+        <fileset dir="${testclasses}"
+                 includes="**/*Test.class"/>
+      </batchtest>
+    </junit>
+  </target>
+
+  <taskdef resource="com/puppycrawl/tools/checkstyle/ant/checkstyle-ant-task.properties">
+    <classpath refid="checkstyle.classpath" />
+  </taskdef>
+  <target name="checks" depends="compile">
+    <checkstyle config="${buildresources}/metrics_checks.xml">
+      <fileset dir="${sources}"
+               includes="**/*.java" />
+      <fileset dir="${testsources}"
+               includes="**/*.java" />
+      <classpath>
+        <path refid="classpath" />
+        <path refid="checkstyle.classpath" />
+      </classpath>
+      <formatter type="plain"
+                 toFile="${generated}/checkstyle_report.txt"/>
+    </checkstyle>
+    <exec executable="cat" outputproperty="checkstyle.result">
+      <arg value="${generated}/checkstyle_report.txt" />
+    </exec>
+    <fail message="Checkstyle complaints: ${checkstyle.result}" >
+      <condition>
+        <not>
+          <length string="${checkstyle.result}"
+                  length="29" />
+        </not>
+      </condition>
+    </fail>
+  </target>
+
+  <target name="gitrev" >
+    <exec executable="git" outputproperty="git.revision">
+      <arg value="rev-parse" />
+      <arg value="--short" />
+      <arg value="HEAD" />
+    </exec>
+  </target>
+
+  <patternset id="base.jar" >
+    <patternset refid="runtime" />
+  </patternset>
+  <patternset id="empty" excludes="*"/>
+  <target name="jar" depends="compile,docs,gitrev" >
+    <propertyfile file="${classes}/${name}.buildrevision.properties" >
+      <entry key="${name}.build.revision"
+             value="${git.revision}" />
+    </propertyfile>
+    <property name="manifestattributes" value="${generated}/additional" />
+    <manifest file="${manifestattributes}" >
+      <attribute name="Main-Class" value="${project-main-class}" />
+    </manifest>
+    <antcall target="jarring" >
+      <param name="destfile" value="${dist}/${jarfile}" />
+      <param name="usebase" value="${classes}" />
+      <param name="usepath" value="${sources}" />
+      <param name="usepattern" value="empty" />
+      <param name="uselibpath" value="${libs}" />
+      <param name="uselibpattern" value="runtime" />
+      <param name="resourceincludes" value="${jarincludes}" />
+    </antcall>
+    <antcall target="jarring" >
+      <param name="destfile" value="${dist}/${jarthinfile}" />
+      <param name="usebase" value="${classes}" />
+      <param name="usepath" value="${sources}" />
+      <param name="usepattern" value="empty" />
+      <param name="uselibpath" value="${libs}" />
+      <param name="uselibpattern" value="empty" />
+      <param name="resourceincludes" value="${jarincludes}" />
+    </antcall>
+    <antcall target="jarring" >
+      <param name="destfile" value="${dist}/${jarsourcesfile}" />
+      <param name="usebase" value="${testsources}" />
+      <param name="usepath" value="${sources}" />
+      <param name="usepattern" value="**/*.java" />
+      <param name="uselibpath" value="${libs}" />
+      <param name="uselibpattern" value="empty" />
+      <param name="resourceincludes" value="X" />
+    </antcall>
+    <antcall target="jarring" >
+      <param name="destfile" value="${dist}/${jardocsfile}" />
+      <param name="usebase" value="${docs}" />
+      <param name="usepath" value="${sources}" />
+      <param name="usepattern" value="*" />
+      <param name="uselibpath" value="${libs}" />
+      <param name="uselibpattern" value="empty" />
+      <param name="resourceincludes" value="X" />
+    </antcall>
+  </target>
+
+  <target name="jarring" >
+    <condition property="manifestfile"
+               value="${manifestattributes}"
+               else="${emptymanifest}" >
+      <and>
+        <equals arg1="${destfile}" arg2="${dist}/${jarfile}" />
+        <isset property="project-main-class"/>
+      </and>
+    </condition>
+    <jar destfile="${destfile}"
+         basedir="${usebase}"
+         manifest="${manifestfile}" >
+      <fileset dir="${resources}" includes="${resourceincludes}" />
+      <fileset dir="${buildresources}" includes="logback.xml" />
+      <restrict>
+        <not>
+          <and>
+            <name name="META-INF/*" />
+            <not>
+              <name name="META-INF/services/java.sql.Driver" />
+            </not>
+          </and>
+        </not>
+        <archives>
+          <zips>
+            <fileset dir="${uselibpath}">
+              <patternset refid="${uselibpattern}" />
+            </fileset>
+          </zips>
+        </archives>
+      </restrict>
+      <fileset dir="${usepath}" includes="${usepattern}" />
+      <manifest>
+        <attribute name="Implemented-By" value="The Tor Project" />
+        <attribute name="Implementation-Title" value="${implementation-title}"/>
+        <attribute name="Implementation-Version"
+                   value="${release.version}-${git.revision}"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="other" if="tardepends" >
+    <antcall target="${tardepends}" />
+  </target>
+
+  <target name="tar" depends="jar,other">
+    <tar destfile="${release.tarball}" compression="gzip">
+      <tarfileset dir="." prefix="${name}-${release.version}">
+        <include name="${dist}/*" />
+        <include name="build.xml" />
+        <include name="LICENSE" />
+        <include name="*.md" />
+      </tarfileset>
+      <tarfileset dir="${basedir}/src"
+                  prefix="${name}-${release.version}/src" />
+      <tarfileset dir="${libs}"
+                  prefix="${name}-${release.version}/lib" />
+    </tar>
+  </target>
+
