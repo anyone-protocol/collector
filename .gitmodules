@@ -1,3 +1,3 @@
 [submodule "src/build"]
 	path = src/build
-	url = https://gitlab.torproject.org/tpo/metrics/base.git
+	url = https://github.com/ATOR-Development/base.git
