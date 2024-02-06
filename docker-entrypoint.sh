@@ -4,4 +4,4 @@ cd /srv/collector.torproject.org/collector/
 
 service nginx restart
 
-java -jar collector-1.18.2-dev.jar
+java -DLOGBASE=data/logs -jar collector-1.18.2-dev.jar

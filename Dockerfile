@@ -18,17 +18,17 @@ RUN mv -v src/main/resources/webapp/* /var/www/collector/html/
 
 RUN mv -f src/main/resources/nginx-collector /etc/nginx/conf.d/default.conf
 
-RUN ln -s /srv/collector.torproject.org/collector/htdocs/ /var/www/collector/html/
+RUN ln -s /srv/collector.torproject.org/collector/data/htdocs/ /var/www/collector/html/
 #
-RUN ln -s /srv/collector.torproject.org/collector/htdocs/index/ /var/www/collector/html/index
+RUN ln -s /srv/collector.torproject.org/collector/data/htdocs/index/ /var/www/collector/html/index
 #
-RUN ln -s /srv/collector.torproject.org/collector/htdocs/recent/ /var/www/collector/html/recent
+RUN ln -s /srv/collector.torproject.org/collector/data/htdocs/recent/ /var/www/collector/html/recent
 #
-RUN ln -s /srv/collector.torproject.org/collector/htdocs/archive/ /var/www/collector/html/archive
+RUN ln -s /srv/collector.torproject.org/collector/data/htdocs/archive/ /var/www/collector/html/archive
 
 RUN cp generated/dist/**dev.jar docker-entrypoint.sh src/main/resources/create-tarballs.sh ..
 
-RUN cd .. && rm -rf temp && mkdir out && mkdir data
+RUN cd .. && rm -rf temp
 
 EXPOSE 9000
 

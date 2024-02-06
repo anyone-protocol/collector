@@ -1,3 +1,84 @@
+job "anon-collector-deploy" {
+  datacenters = ["ator-fin"]
+  type = "service"
+  namespace = "ator-network"
+
+  group "anon-collector-group" {
+    count = 1
+
+    constraint {
+      attribute = "${node.unique.id}"
+      value     = "c8e55509-a756-0aa7-563b-9665aa4915ab"
+    }
+
+#    volume "collector-data" {
+#      type      = "host"
+#      read_only = false
+#      source    = "collector-data"
+#    }
+
+    network  {
+      port "collector-http" {
+        static = 9000
+      }
+    }
+
+    ephemeral_disk {
+      migrate = true
+      sticky  = true
+    }
+
+    task "anon-collector-task" {
+      driver = "docker"
+
+      env {
+        LOGBASE = "data/logs"
+      }
+
+      #      volume_mount {
+      #        volume      = "collector-data"
+      #        destination = "/srv/collector"
+      #        read_only   = false
+      #      }
+
+      config {
+        image = "svforte/collector"
+        ports = ["collector-http"]
+        volumes = [
+          "local/collector.properties:/srv/collector.torproject.org/collector/collector.properties:ro",
+        ]
+      }
+
+      resources {
+        cpu    = 256
+        memory = 256
+      }
+
+      service {
+        name = "anon-collector"
+        port = "collector-http"
+        #        tags = [
+        #          "traefik.enable=true",
+        #          "traefik.http.routers.deb-repo.entrypoints=https",
+        #          "traefik.http.routers.deb-repo.rule=Host(`deb.dmz.ator.dev`)",
+        #          "traefik.http.routers.deb-repo.tls=true",
+        #          "traefik.http.routers.deb-repo.tls.certresolver=atorresolver",
+        #        ]
+        check {
+          name     = "collector web http server alive"
+          type     = "tcp"
+          interval = "10s"
+          timeout  = "10s"
+          check_restart {
+            limit = 10
+            grace = "30s"
+          }
+        }
+      }
+
+      template {
+        change_mode = "noop"
+        data = <<EOH
 ######## Collector Properties
 #
 ######## Run Configuration ########
@@ -241,3 +322,9 @@ BridgestrapStatsSyncOrigins = https://collector.torproject.org
 ## Where to download snowflake statistics from.
 BridgestrapStatsUrl = https://bridges.torproject.org/bridgestrap-collector
 #
+        EOH
+        destination = "local/collector.properties"
+      }
+    }
+  }
+}

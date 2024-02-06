@@ -5,7 +5,5 @@ services:
     ports:
       - "9000:9000"
     volumes:
-      - ./collector-data/logs/:/srv/collector.torproject.org/collector/logs
-#      - ./collector-data/indexed/:/srv/collector.torproject.org/collector/indexed
-#      - ./collector-data/htdocs/:/srv/collector.torproject.org/collector/htdocs
+      - ./collector-data/:/srv/collector.torproject.org/collector/data
       - ./collector.properties:/srv/collector.torproject.org/collector/collector.properties
