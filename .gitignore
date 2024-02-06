@@ -18,3 +18,4 @@ build.properties
 /.idea/
 *.iml
 collector.properties
+collector-data

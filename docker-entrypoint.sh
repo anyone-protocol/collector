@@ -1,6 +1,6 @@
 cd /srv/collector.torproject.org/collector/
 
-./create-tarball.sh
+#./create-tarballs.sh
 
 service nginx restart
 
