@@ -18,7 +18,7 @@ server {
   # need to add an entry on /etc/hosts for collector
   # server_name collector;
 
-  listen 0.0.0.0:9000;
+  listen 0.0.0.0:80;
 
   location / {
     #TODO - fix fancyindex module

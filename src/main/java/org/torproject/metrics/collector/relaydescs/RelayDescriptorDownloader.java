@@ -342,8 +342,9 @@ public class RelayDescriptorDownloader {
     this.missingDescriptors = new TreeMap<>();
     this.microdescriptorKeys = new HashMap<>();
     this.missingMicrodescriptors = new HashSet<>();
+    //todo - remove hardcoded path
     this.missingDescriptorsFile = new File(
-        "stats/missing-relay-descriptors");
+        "data/stats/missing-relay-descriptors");
     if (this.missingDescriptorsFile.exists()) {
       try {
         logger.debug("Reading file {}...",
@@ -411,8 +412,9 @@ public class RelayDescriptorDownloader {
     /* Read list of directory authorities and when we last downloaded all
      * server and extra-info descriptors from them. */
     this.lastDownloadedAllDescriptors = new HashMap<>();
+    //todo - remove hardcoded path
     this.lastDownloadedAllDescriptorsFile = new File(
-        "stats/last-downloaded-all-descriptors");
+        "data/stats/last-downloaded-all-descriptors");
     if (this.lastDownloadedAllDescriptorsFile.exists()) {
       try {
         logger.debug("Reading file {}...",
