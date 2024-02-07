@@ -1,4 +1,4 @@
-job "anon-collector-deploy" {
+job "anon-collector-deploy-dev" {
   datacenters = ["ator-fin"]
   type = "service"
   namespace = "ator-network"
@@ -26,6 +26,7 @@ job "anon-collector-deploy" {
     network  {
       port "http-port" {
         static = 9000
+        to     = 80
       }
     }
 
@@ -330,9 +331,7 @@ BridgestrapStatsUrl = https://bridges.torproject.org/bridgestrap-collector
         volumes = [
           "local/nginx-collector:/etc/nginx/conf.d/default.conf:ro"
         ]
-        port_map {
-          http-port = 80
-        }
+        ports = ["http-port"]
       }
 
       resources {
