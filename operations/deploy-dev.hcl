@@ -1,7 +1,7 @@
-job "anon-collector-deploy-dev" {
+job "collector-dev" {
   datacenters = ["ator-fin"]
-  type = "service"
-  namespace = "ator-network"
+  type        = "service"
+  namespace   = "ator-network"
 
   group "collector-dev-group" {
     count = 1
@@ -11,19 +11,19 @@ job "anon-collector-deploy-dev" {
       value     = "c8e55509-a756-0aa7-563b-9665aa4915ab"
     }
 
-#    volume "collector-data-jar" {
-#      type      = "host"
-#      read_only = false
-#      source    = "collector-data"
-#    }
+    #    volume "collector-data-jar" {
+    #      type      = "host"
+    #      read_only = false
+    #      source    = "collector-data"
+    #    }
 
-#    volume "collector-data-nginx" {
-#      type      = "host"
-#      read_only = true
-#      source    = "collector-data/htdocs"
-#    }
+    #    volume "collector-data-nginx" {
+    #      type      = "host"
+    #      read_only = true
+    #      source    = "collector-data/htdocs"
+    #    }
 
-    network  {
+    network {
       port "http-port" {
         static = 9000
         to     = 80
@@ -42,14 +42,14 @@ job "anon-collector-deploy-dev" {
         LOGBASE = "data/logs"
       }
 
-#      volume_mount {
-#        volume      = "collector-data"
-#        destination = "/srv/collector/data"
-#        read_only   = false
-#      }
+      #      volume_mount {
+      #        volume      = "collector-data"
+      #        destination = "/srv/collector/data"
+      #        read_only   = false
+      #      }
 
       config {
-        image = "svforte/collector"
+        image   = "svforte/collector"
         volumes = [
           "local/collector.properties:/srv/collector/collector.properties:ro",
           "local/logs:/srv/collector/data/logs"
@@ -68,7 +68,7 @@ job "anon-collector-deploy-dev" {
 
       template {
         change_mode = "noop"
-        data = <<EOH
+        data        = <<EOH
 ######## Collector Properties
 #
 ######## Run Configuration ########
@@ -320,14 +320,14 @@ BridgestrapStatsUrl = https://bridges.torproject.org/bridgestrap-collector
     task "collector-nginx-dev-task" {
       driver = "docker"
 
-#      volume_mount {
-#        volume      = "collector-data-nginx"
-#        destination = "/var/www/collector/html"
-#        read_only   = true
-#      }
+      #      volume_mount {
+      #        volume      = "collector-data-nginx"
+      #        destination = "/var/www/collector/html"
+      #        read_only   = true
+      #      }
 
       config {
-        image = "nginx"
+        image   = "nginx"
         volumes = [
           "local/nginx-collector:/etc/nginx/conf.d/default.conf:ro"
         ]
@@ -342,13 +342,13 @@ BridgestrapStatsUrl = https://bridges.torproject.org/bridgestrap-collector
       service {
         name = "collector-nginx-dev"
         port = "http-port"
-#        tags = [
-#          "traefik.enable=true",
-#          "traefik.http.routers.deb-repo.entrypoints=https",
-#          "traefik.http.routers.deb-repo.rule=Host(`dev.collector.dmz.ator.dev`)",
-#          "traefik.http.routers.deb-repo.tls=true",
-#          "traefik.http.routers.deb-repo.tls.certresolver=atorresolver",
-#        ]
+        #        tags = [
+        #          "traefik.enable=true",
+        #          "traefik.http.routers.deb-repo.entrypoints=https",
+        #          "traefik.http.routers.deb-repo.rule=Host(`dev.collector.dmz.ator.dev`)",
+        #          "traefik.http.routers.deb-repo.tls=true",
+        #          "traefik.http.routers.deb-repo.tls.certresolver=atorresolver",
+        #        ]
         check {
           name     = "collector nginx http server alive"
           type     = "tcp"
@@ -363,7 +363,7 @@ BridgestrapStatsUrl = https://bridges.torproject.org/bridgestrap-collector
 
       template {
         change_mode = "noop"
-        data = <<EOH
+        data        = <<EOH
 ##
 # The following is a simple nginx configuration to run CollecTor.
 ##

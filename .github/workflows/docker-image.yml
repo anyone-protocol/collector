@@ -25,4 +25,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/collector:latest
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/collector:${{ github.sha }},${{ secrets.DOCKER_HUB_USERNAME }}/collector:latest

@@ -1,6 +1,6 @@
 FROM debian:bookworm
 
-ADD . /srv/collector/temp
+ADD .. /srv/collector/temp
 
 WORKDIR /srv/collector
 
@@ -13,7 +13,7 @@ RUN apt-get update && \
     ant fetch-metrics-lib && \
     ant -lib /usr/share/java resolve && \
     ant tar && \
-    cp generated/dist/**dev.jar docker-entrypoint.sh .. && \
+    cp generated/dist/**dev.jar docker/docker-entrypoint.sh .. && \
     cd .. && \
     rm -rf temp
 

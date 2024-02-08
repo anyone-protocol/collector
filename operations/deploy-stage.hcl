@@ -1,7 +1,7 @@
-job "anon-collector-deploy-stage" {
+job "collector-stage" {
   datacenters = ["ator-fin"]
-  type = "service"
-  namespace = "ator-network"
+  type        = "service"
+  namespace   = "ator-network"
 
   group "collector-stage-group" {
     count = 1
@@ -23,7 +23,7 @@ job "anon-collector-deploy-stage" {
     #      source    = "collector-data/htdocs"
     #    }
 
-    network  {
+    network {
       port "http-port" {
         static = 9100
         to     = 80
@@ -49,7 +49,7 @@ job "anon-collector-deploy-stage" {
       #      }
 
       config {
-        image = "svforte/collector"
+        image   = "svforte/collector"
         volumes = [
           "local/collector.properties:/srv/collector/collector.properties:ro",
           "local/logs:/srv/collector/data/logs"
@@ -68,7 +68,7 @@ job "anon-collector-deploy-stage" {
 
       template {
         change_mode = "noop"
-        data = <<EOH
+        data        = <<EOH
 ######## Collector Properties
 #
 ######## Run Configuration ########
@@ -327,7 +327,7 @@ BridgestrapStatsUrl = https://bridges.torproject.org/bridgestrap-collector
       #      }
 
       config {
-        image = "nginx"
+        image   = "nginx"
         volumes = [
           "local/nginx-collector:/etc/nginx/conf.d/default.conf:ro"
         ]
@@ -345,7 +345,7 @@ BridgestrapStatsUrl = https://bridges.torproject.org/bridgestrap-collector
         #        tags = [
         #          "traefik.enable=true",
         #          "traefik.http.routers.deb-repo.entrypoints=https",
-        #          "traefik.http.routers.deb-repo.rule=Host(`stage.collector.dmz.ator.stage`)",
+        #          "traefik.http.routers.deb-repo.rule=Host(`stage.collector.dmz.ator.dev`)",
         #          "traefik.http.routers.deb-repo.tls=true",
         #          "traefik.http.routers.deb-repo.tls.certresolver=atorresolver",
         #        ]
@@ -363,7 +363,7 @@ BridgestrapStatsUrl = https://bridges.torproject.org/bridgestrap-collector
 
       template {
         change_mode = "noop"
-        data = <<EOH
+        data        = <<EOH
 ##
 # The following is a simple nginx configuration to run CollecTor.
 ##
