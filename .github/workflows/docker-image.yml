@@ -24,5 +24,6 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
+          file: ./docker/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/collector:${{ github.sha }},${{ secrets.DOCKER_HUB_USERNAME }}/collector:latest
