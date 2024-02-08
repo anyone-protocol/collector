@@ -1,1 +1,3 @@
-java -DLOGBASE=${LOGBASE} -jar collector-1.18.2-dev.jar
+mkdir -p data/htdocs
+
+java -DLOGBASE=${LOGBASE} -jar collector-*.jar

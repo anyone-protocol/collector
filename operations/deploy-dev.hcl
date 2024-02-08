@@ -11,16 +11,10 @@ job "collector-dev" {
       value     = "c8e55509-a756-0aa7-563b-9665aa4915ab"
     }
 
-    #    volume "collector-data-jar" {
+    #    volume "collector-data" {
     #      type      = "host"
     #      read_only = false
     #      source    = "collector-data"
-    #    }
-
-    #    volume "collector-data-nginx" {
-    #      type      = "host"
-    #      read_only = true
-    #      source    = "collector-data/htdocs"
     #    }
 
     network {
@@ -63,7 +57,6 @@ job "collector-dev" {
 
       service {
         name = "collector-jar-dev"
-        #todo - how to check liveness
       }
 
       template {
@@ -321,8 +314,8 @@ BridgestrapStatsUrl = https://bridges.torproject.org/bridgestrap-collector
       driver = "docker"
 
       #      volume_mount {
-      #        volume      = "collector-data-nginx"
-      #        destination = "/var/www/collector/html"
+      #        volume      = "collector-data"
+      #        destination = "/var/www/collector"
       #        read_only   = true
       #      }
 
@@ -369,7 +362,7 @@ BridgestrapStatsUrl = https://bridges.torproject.org/bridgestrap-collector
 ##
 server {
 
-  root /var/www/collector/html;
+  root /var/www/collector/htdocs;
 
   # This option make sure that nginx will follow symlinks to the appropriate
   # CollecTor folders

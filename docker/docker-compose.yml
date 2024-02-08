@@ -17,4 +17,4 @@ services:
       - "9000:80"
     volumes:
       - ../src/main/resources/nginx-collector:/etc/nginx/conf.d/default.conf
-      - ./collector-data/htdocs:/var/www/collector/html
+      - ./collector-data/:/var/www/collector

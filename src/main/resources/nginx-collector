@@ -3,10 +3,7 @@
 ##
 server {
 
-  # We assume the you have copied the content of webapp to
-  # /var/www/collector/html
-
-  root /var/www/collector/html;
+  root /var/www/collector/htdocs;
 
   # This option make sure that nginx will follow symlinks to the appropriate
   # CollecTor folders
