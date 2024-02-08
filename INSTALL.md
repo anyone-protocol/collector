@@ -133,7 +133,7 @@ Complete the initialization step by copying the shell script
 tarball to the working directory or another location of your choice, editing the
 contained paths, and executing it.  Note that this script will at least partly
 fail if one or more modules are deactivated, and that if you haven't edited any
-paths, the script will write to `/srv/collector.torproject.org/collector/`.
+paths, the script will write to `/srv/collector/`.
 
 
 ### Scheduling periodic runs

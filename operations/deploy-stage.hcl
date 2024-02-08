@@ -1,3 +1,68 @@
+job "collector-stage" {
+  datacenters = ["ator-fin"]
+  type        = "service"
+  namespace   = "ator-network"
+
+  group "collector-stage-group" {
+    count = 1
+
+    constraint {
+      attribute = "${node.unique.id}"
+      value     = "c8e55509-a756-0aa7-563b-9665aa4915ab"
+    }
+
+    #    volume "collector-data" {
+    #      type      = "host"
+    #      read_only = false
+    #      source    = "collector-data"
+    #    }
+
+    network {
+      port "http-port" {
+        static = 9100
+        to     = 80
+      }
+    }
+
+    ephemeral_disk {
+      migrate = true
+      sticky  = true
+    }
+
+    task "collector-jar-stage-task" {
+      driver = "docker"
+
+      env {
+        LOGBASE = "data/logs"
+      }
+
+      #      volume_mount {
+      #        volume      = "collector-data"
+      #        destination = "/srv/collector/data"
+      #        read_only   = false
+      #      }
+
+      config {
+        image   = "svforte/collector"
+        volumes = [
+          "local/collector.properties:/srv/collector/collector.properties:ro",
+          "local/logs:/srv/collector/data/logs"
+        ]
+      }
+
+      resources {
+        cpu    = 256
+        memory = 1024
+      }
+
+      service {
+        name = "collector-jar-stage"
+        #todo - how to check liveness
+      }
+
+      template {
+        change_mode = "noop"
+        data        = <<EOH
 ######## Collector Properties
 #
 ######## Run Configuration ########
@@ -72,7 +137,7 @@ BridgestrapStatsOffsetMinutes = 100
 ######## General Properties ########
 # The URL of this instance.  This will be the base URL
 # written to index.json, i.e. please change this to the mirrors url!
-InstanceBaseUrl = http://host.docker.internal:9000
+InstanceBaseUrl = http://88.99.219.105:9100
 # The top-level directory for archived descriptors.
 IndexedPath = data/indexed
 # The top-level directory for the recent descriptors that were
@@ -116,11 +181,11 @@ KeepDirectoryArchiveImportHistory = true
 #
 ## Comma separated list of directory authority addresses (IP[:port]) to
 ## download missing relay descriptors from
-DirectoryAuthoritiesAddresses = 49.13.145.234:9030,5.161.108.187:9030,5.78.90.106:9030
+DirectoryAuthoritiesAddresses = 49.13.145.234:9130,5.161.108.187:9130,5.78.90.106:9130
 #
 ## Comma separated list of directory authority fingerprints to download
 ## votes
-DirectoryAuthoritiesFingerprintsForVotes = 7652FE7D5B120F1D6A747FF11FF2F423C6428789,108915505A15CAF5DF9DDEC3FCB498953419D1F9,54FC95706E969D4FC46974439D1D698AD1C84B64
+DirectoryAuthoritiesFingerprintsForVotes = 40E6B58C1BAD7572339201BE90818B406B3EED78,0C4B4C71F531E9B3A7CB0B1D80D48371FB24AB59,D1DC16BF9FE118E5A6C8D392993B1FB3673849BF
 #
 ## Download all server descriptors from the directory authorities at most
 ## once a day (only if DownloadRelayDescriptors is true)
@@ -241,3 +306,84 @@ BridgestrapStatsSyncOrigins = https://collector.torproject.org
 ## Where to download snowflake statistics from.
 BridgestrapStatsUrl = https://bridges.torproject.org/bridgestrap-collector
 #
+        EOH
+        destination = "local/collector.properties"
+      }
+    }
+
+    task "collector-nginx-stage-task" {
+      driver = "docker"
+
+      #      volume_mount {
+      #        volume      = "collector-data-nginx"
+      #        destination = "/var/www/collector/html"
+      #        read_only   = true
+      #      }
+
+      config {
+        image   = "nginx"
+        volumes = [
+          "local/nginx-collector:/etc/nginx/conf.d/default.conf:ro"
+        ]
+        ports = ["http-port"]
+      }
+
+      resources {
+        cpu    = 256
+        memory = 256
+      }
+
+      service {
+        name = "collector-nginx-stage"
+        port = "http-port"
+        #        tags = [
+        #          "traefik.enable=true",
+        #          "traefik.http.routers.deb-repo.entrypoints=https",
+        #          "traefik.http.routers.deb-repo.rule=Host(`stage.collector.dmz.ator.dev`)",
+        #          "traefik.http.routers.deb-repo.tls=true",
+        #          "traefik.http.routers.deb-repo.tls.certresolver=atorresolver",
+        #        ]
+        check {
+          name     = "collector nginx http server alive"
+          type     = "tcp"
+          interval = "10s"
+          timeout  = "10s"
+          check_restart {
+            limit = 10
+            grace = "30s"
+          }
+        }
+      }
+
+      template {
+        change_mode = "noop"
+        data        = <<EOH
+##
+# The following is a simple nginx configuration to run CollecTor.
+##
+server {
+
+  root /var/www/collector/htdocs;
+
+  # This option make sure that nginx will follow symlinks to the appropriate
+  # CollecTor folders
+  autoindex on;
+
+  index index.html;
+
+  listen 0.0.0.0:80;
+
+  location / {
+    try_files $uri $uri/ =404;
+  }
+
+  location ~/\.ht {
+    deny all;
+  }
+}
+        EOH
+        destination = "local/nginx-collector"
+      }
+    }
+  }
+}

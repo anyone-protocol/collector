@@ -16,3 +16,5 @@ build.properties
 /index/
 
 /.idea/
+*.iml
+docker/collector-data
