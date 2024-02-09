@@ -14,13 +14,15 @@ job "collector-stage" {
     #    volume "collector-data" {
     #      type      = "host"
     #      read_only = false
-    #      source    = "collector-data"
+    #      source    = "collector-data-stage"
     #    }
 
     network {
+      mode = "bridge"
       port "http-port" {
         static = 9100
         to     = 80
+        host_network = "wireguard"
       }
     }
 
@@ -56,8 +58,10 @@ job "collector-stage" {
       }
 
       service {
-        name = "collector-jar-stage"
-        #todo - how to check liveness
+        name     = "collector-stage"
+        provider = "nomad"
+        tags     = ["collector"]
+        port     = "http-port"
       }
 
       template {
