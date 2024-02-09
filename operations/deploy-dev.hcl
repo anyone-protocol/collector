@@ -14,13 +14,15 @@ job "collector-dev" {
     #    volume "collector-data" {
     #      type      = "host"
     #      read_only = false
-    #      source    = "collector-data"
+    #      source    = "collector-data-dev"
     #    }
 
     network {
+      mode = "bridge"
       port "http-port" {
         static = 9000
         to     = 80
+        host_network = "wireguard"
       }
     }
 
@@ -56,7 +58,10 @@ job "collector-dev" {
       }
 
       service {
-        name = "collector-jar-dev"
+        name     = "collector-dev"
+        provider = "nomad"
+        tags     = ["collector"]
+        port     = "http-port"
       }
 
       template {
