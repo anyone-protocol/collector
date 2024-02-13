@@ -6,21 +6,18 @@ job "collector-dev" {
   group "collector-dev-group" {
     count = 1
 
-    constraint {
-      attribute = "${node.unique.id}"
-      value     = "c8e55509-a756-0aa7-563b-9665aa4915ab"
+    volume "collector-data" {
+       type      = "host"
+       read_only = false
+       source    = "collector-dev"
     }
 
-    #    volume "collector-data" {
-    #      type      = "host"
-    #      read_only = false
-    #      source    = "collector-data"
-    #    }
-
     network {
+      mode = "bridge"
       port "http-port" {
         static = 9000
         to     = 80
+        host_network = "wireguard"
       }
     }
 
@@ -36,11 +33,11 @@ job "collector-dev" {
         LOGBASE = "data/logs"
       }
 
-      #      volume_mount {
-      #        volume      = "collector-data"
-      #        destination = "/srv/collector/data"
-      #        read_only   = false
-      #      }
+      volume_mount {
+         volume      = "collector-data"
+         destination = "/srv/collector/data"
+         read_only   = false
+      }
 
       config {
         image   = "svforte/collector"
@@ -53,10 +50,6 @@ job "collector-dev" {
       resources {
         cpu    = 256
         memory = 1024
-      }
-
-      service {
-        name = "collector-jar-dev"
       }
 
       template {
@@ -313,11 +306,11 @@ BridgestrapStatsUrl = https://bridges.torproject.org/bridgestrap-collector
     task "collector-nginx-dev-task" {
       driver = "docker"
 
-      #      volume_mount {
-      #        volume      = "collector-data"
-      #        destination = "/var/www/collector"
-      #        read_only   = true
-      #      }
+      volume_mount {
+        volume      = "collector-data"
+        destination = "/var/www/collector"
+        read_only   = true
+      }
 
       config {
         image   = "nginx"
@@ -333,15 +326,10 @@ BridgestrapStatsUrl = https://bridges.torproject.org/bridgestrap-collector
       }
 
       service {
-        name = "collector-nginx-dev"
-        port = "http-port"
-        #        tags = [
-        #          "traefik.enable=true",
-        #          "traefik.http.routers.deb-repo.entrypoints=https",
-        #          "traefik.http.routers.deb-repo.rule=Host(`dev.collector.dmz.ator.dev`)",
-        #          "traefik.http.routers.deb-repo.tls=true",
-        #          "traefik.http.routers.deb-repo.tls.certresolver=atorresolver",
-        #        ]
+        name     = "collector-dev"
+        provider = "nomad"
+        tags     = ["collector"]
+        port     = "http-port"
         check {
           name     = "collector nginx http server alive"
           type     = "tcp"
