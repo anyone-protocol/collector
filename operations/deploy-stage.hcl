@@ -6,16 +6,11 @@ job "collector-stage" {
   group "collector-stage-group" {
     count = 1
 
-    constraint {
-      attribute = "${node.unique.id}"
-      value     = "c8e55509-a756-0aa7-563b-9665aa4915ab"
+    volume "collector-data" {
+      type      = "host"
+      read_only = false
+      source    = "collector-stage"
     }
-
-    #    volume "collector-data" {
-    #      type      = "host"
-    #      read_only = false
-    #      source    = "collector-data-stage"
-    #    }
 
     network {
       mode = "bridge"
@@ -38,11 +33,11 @@ job "collector-stage" {
         LOGBASE = "data/logs"
       }
 
-      #      volume_mount {
-      #        volume      = "collector-data"
-      #        destination = "/srv/collector/data"
-      #        read_only   = false
-      #      }
+      volume_mount {
+        volume      = "collector-data"
+        destination = "/srv/collector/data"
+        read_only   = false
+      }
 
       config {
         image   = "svforte/collector"
@@ -55,13 +50,6 @@ job "collector-stage" {
       resources {
         cpu    = 256
         memory = 1024
-      }
-
-      service {
-        name     = "collector-stage"
-        provider = "nomad"
-        tags     = ["collector"]
-        port     = "http-port"
       }
 
       template {
@@ -318,11 +306,11 @@ BridgestrapStatsUrl = https://bridges.torproject.org/bridgestrap-collector
     task "collector-nginx-stage-task" {
       driver = "docker"
 
-      #      volume_mount {
-      #        volume      = "collector-data-nginx"
-      #        destination = "/var/www/collector/html"
-      #        read_only   = true
-      #      }
+      volume_mount {
+        volume      = "collector-data-nginx"
+        destination = "/var/www/collector/html"
+        read_only   = true
+      }
 
       config {
         image   = "nginx"
@@ -337,16 +325,11 @@ BridgestrapStatsUrl = https://bridges.torproject.org/bridgestrap-collector
         memory = 256
       }
 
-      service {
-        name = "collector-nginx-stage"
-        port = "http-port"
-        #        tags = [
-        #          "traefik.enable=true",
-        #          "traefik.http.routers.deb-repo.entrypoints=https",
-        #          "traefik.http.routers.deb-repo.rule=Host(`stage.collector.dmz.ator.dev`)",
-        #          "traefik.http.routers.deb-repo.tls=true",
-        #          "traefik.http.routers.deb-repo.tls.certresolver=atorresolver",
-        #        ]
+      service {     
+        name     = "collector-stage"
+        provider = "nomad"
+        tags     = ["collector"]
+        port     = "http-port"
         check {
           name     = "collector nginx http server alive"
           type     = "tcp"
