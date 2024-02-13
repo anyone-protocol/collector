@@ -307,8 +307,8 @@ BridgestrapStatsUrl = https://bridges.torproject.org/bridgestrap-collector
       driver = "docker"
 
       volume_mount {
-        volume      = "collector-data-nginx"
-        destination = "/var/www/collector/html"
+        volume      = "collector-data"
+        destination = "/var/www/collector"
         read_only   = true
       }
 
