@@ -1,0 +1,20 @@
+version: '3'
+services:
+  collector-jar:
+    image: collector
+    restart: always
+    environment:
+      LOGBASE: "data/logs"
+    volumes:
+      - ../src/main/resources/collector.properties:/srv/collector/collector.properties
+      - ./collector-data/:/srv/collector/data
+  collector-nginx:
+    image: nginx
+    restart: always
+    depends_on:
+      - collector-jar
+    ports:
+      - "9000:80"
+    volumes:
+      - ../src/main/resources/nginx-collector:/etc/nginx/conf.d/default.conf
+      - ./collector-data/:/var/www/collector

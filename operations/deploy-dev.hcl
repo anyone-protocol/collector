@@ -1,3 +1,60 @@
+job "collector-dev" {
+  datacenters = ["ator-fin"]
+  type        = "service"
+  namespace   = "ator-network"
+
+  group "collector-dev-group" {
+    count = 1
+
+    volume "collector-data" {
+       type      = "host"
+       read_only = false
+       source    = "collector-dev"
+    }
+
+    network {
+      mode = "bridge"
+      port "http-port" {
+        static = 9000
+        to     = 80
+        host_network = "wireguard"
+      }
+    }
+
+    ephemeral_disk {
+      migrate = true
+      sticky  = true
+    }
+
+    task "collector-jar-dev-task" {
+      driver = "docker"
+
+      env {
+        LOGBASE = "data/logs"
+      }
+
+      volume_mount {
+         volume      = "collector-data"
+         destination = "/srv/collector/data"
+         read_only   = false
+      }
+
+      config {
+        image   = "svforte/collector"
+        volumes = [
+          "local/collector.properties:/srv/collector/collector.properties:ro",
+          "local/logs:/srv/collector/data/logs"
+        ]
+      }
+
+      resources {
+        cpu    = 256
+        memory = 1024
+      }
+
+      template {
+        change_mode = "noop"
+        data        = <<EOH
 ######## Collector Properties
 #
 ######## Run Configuration ########
@@ -72,7 +129,7 @@ BridgestrapStatsOffsetMinutes = 100
 ######## General Properties ########
 # The URL of this instance.  This will be the base URL
 # written to index.json, i.e. please change this to the mirrors url!
-InstanceBaseUrl = http://host.docker.internal:9000
+InstanceBaseUrl = http://88.99.219.105:9000
 # The top-level directory for archived descriptors.
 IndexedPath = data/indexed
 # The top-level directory for the recent descriptors that were
@@ -241,3 +298,79 @@ BridgestrapStatsSyncOrigins = https://collector.torproject.org
 ## Where to download snowflake statistics from.
 BridgestrapStatsUrl = https://bridges.torproject.org/bridgestrap-collector
 #
+        EOH
+        destination = "local/collector.properties"
+      }
+    }
+
+    task "collector-nginx-dev-task" {
+      driver = "docker"
+
+      volume_mount {
+        volume      = "collector-data"
+        destination = "/var/www/collector"
+        read_only   = true
+      }
+
+      config {
+        image   = "nginx"
+        volumes = [
+          "local/nginx-collector:/etc/nginx/conf.d/default.conf:ro"
+        ]
+        ports = ["http-port"]
+      }
+
+      resources {
+        cpu    = 256
+        memory = 256
+      }
+
+      service {
+        name     = "collector-dev"
+        provider = "nomad"
+        tags     = ["collector"]
+        port     = "http-port"
+        check {
+          name     = "collector nginx http server alive"
+          type     = "tcp"
+          interval = "10s"
+          timeout  = "10s"
+          check_restart {
+            limit = 10
+            grace = "30s"
+          }
+        }
+      }
+
+      template {
+        change_mode = "noop"
+        data        = <<EOH
+##
+# The following is a simple nginx configuration to run CollecTor.
+##
+server {
+
+  root /var/www/collector/htdocs;
+
+  # This option make sure that nginx will follow symlinks to the appropriate
+  # CollecTor folders
+  autoindex on;
+
+  index index.html;
+
+  listen 0.0.0.0:80;
+
+  location / {
+    try_files $uri $uri/ =404;
+  }
+
+  location ~/\.ht {
+    deny all;
+  }
+}
+        EOH
+        destination = "local/nginx-collector"
+      }
+    }
+  }
+}
