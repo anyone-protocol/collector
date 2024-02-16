@@ -129,7 +129,7 @@ BridgestrapStatsOffsetMinutes = 100
 ######## General Properties ########
 # The URL of this instance.  This will be the base URL
 # written to index.json, i.e. please change this to the mirrors url!
-InstanceBaseUrl = http://88.99.219.105:9100
+InstanceBaseUrl = http://10.1.244.1:9100
 # The top-level directory for archived descriptors.
 IndexedPath = data/indexed
 # The top-level directory for the recent descriptors that were
