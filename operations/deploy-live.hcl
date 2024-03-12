@@ -1,15 +1,15 @@
-job "collector-stage" {
+job "collector-live" {
   datacenters = ["ator-fin"]
   type        = "service"
   namespace   = "ator-network"
 
-  group "collector-stage-group" {
+  group "collector-live-group" {
     count = 1
 
     volume "collector-data" {
       type      = "host"
       read_only = false
-      source    = "collector-stage"
+      source    = "collector-live"
     }
 
     network {
@@ -26,7 +26,7 @@ job "collector-stage" {
       sticky  = true
     }
 
-    task "collector-jar-stage-task" {
+    task "collector-jar-live-task" {
       driver = "docker"
 
       env {
@@ -40,7 +40,7 @@ job "collector-stage" {
       }
 
       config {
-        image   = "svforte/collector:latest-stage"
+        image   = "svforte/collector"
         volumes = [
           "local/collector.properties:/srv/collector/collector.properties:ro",
           "local/logs:/srv/collector/data/logs"
@@ -303,7 +303,7 @@ BridgestrapStatsUrl = https://bridges.torproject.org/bridgestrap-collector
       }
     }
 
-    task "collector-nginx-stage-task" {
+    task "collector-nginx-live-task" {
       driver = "docker"
 
       volume_mount {
@@ -326,7 +326,7 @@ BridgestrapStatsUrl = https://bridges.torproject.org/bridgestrap-collector
       }
 
       service {     
-        name     = "collector-stage"
+        name     = "collector-live"
         provider = "nomad"
         tags     = ["collector"]
         port     = "http-port"
