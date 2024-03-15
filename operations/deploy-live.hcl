@@ -173,11 +173,11 @@ KeepDirectoryArchiveImportHistory = true
 #
 ## Comma separated list of directory authority addresses (IP[:port]) to
 ## download missing relay descriptors from
-DirectoryAuthoritiesAddresses = 49.13.145.234:9130,5.161.108.187:9130,5.78.90.106:9130
+DirectoryAuthoritiesAddresses = 49.13.145.234:9230,5.161.108.187:9230,5.78.90.106:9230
 #
 ## Comma separated list of directory authority fingerprints to download
 ## votes
-DirectoryAuthoritiesFingerprintsForVotes = 40E6B58C1BAD7572339201BE90818B406B3EED78,0C4B4C71F531E9B3A7CB0B1D80D48371FB24AB59,D1DC16BF9FE118E5A6C8D392993B1FB3673849BF
+DirectoryAuthoritiesFingerprintsForVotes = 9F01AEC951F037664F8762D54E0EEA8E6809176A,54849A361F8CED0D1B70B722CB8B33E9071E5561,2E397C3F4BC12B4F92940C2B92D4E091E82D2D31
 #
 ## Download all server descriptors from the directory authorities at most
 ## once a day (only if DownloadRelayDescriptors is true)
@@ -325,7 +325,7 @@ BridgestrapStatsUrl = https://bridges.torproject.org/bridgestrap-collector
         memory = 256
       }
 
-      service {     
+      service {
         name     = "collector-live"
         provider = "nomad"
         tags     = ["collector"]
