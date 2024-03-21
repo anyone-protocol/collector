@@ -40,7 +40,8 @@ job "collector-live" {
       }
 
       config {
-        image   = "svforte/collector"
+        image   = "svforte/collector:latest"
+        force_pull = true
         volumes = [
           "local/collector.properties:/srv/collector/collector.properties:ro",
           "local/logs:/srv/collector/data/logs"
@@ -360,7 +361,7 @@ server {
 
   listen 0.0.0.0:80;
 
-  location / {
+  lo  cation / {
     try_files $uri $uri/ =404;
   }
 

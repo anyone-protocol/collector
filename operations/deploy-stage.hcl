@@ -41,6 +41,7 @@ job "collector-stage" {
 
       config {
         image   = "svforte/collector:latest-stage"
+        force_pull = true
         volumes = [
           "local/collector.properties:/srv/collector/collector.properties:ro",
           "local/logs:/srv/collector/data/logs"
