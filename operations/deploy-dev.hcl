@@ -40,7 +40,8 @@ job "collector-dev" {
       }
 
       config {
-        image   = "svforte/collector"
+        image   = "svforte/collector:latest-dev"
+        force_pull = true
         volumes = [
           "local/collector.properties:/srv/collector/collector.properties:ro",
           "local/logs:/srv/collector/data/logs"
