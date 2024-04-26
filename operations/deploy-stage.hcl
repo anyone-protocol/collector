@@ -87,9 +87,9 @@ ExitlistsOffsetMinutes = 2
 ## the following defines, if this module is activated
 RelaydescsActivated = true
 # period in minutes
-RelaydescsPeriodMinutes = 10
+RelaydescsPeriodMinutes = 5
 # offset in minutes since the epoch and
-RelaydescsOffsetMinutes = 4
+RelaydescsOffsetMinutes = 0
 ## the following defines, if this module is activated
 OnionPerfActivated = false
 # period in minutes
@@ -99,9 +99,9 @@ OnionPerfOffsetMinutes = 1
 # the following defines, if this module is activated
 UpdateindexActivated = true
 # period in minutes
-UpdateindexPeriodMinutes = 10
+UpdateindexPeriodMinutes = 5
 # offset in minutes since the epoch and
-UpdateindexOffsetMinutes = 8
+UpdateindexOffsetMinutes = 0
 # the following defines, if this module is activated
 WebstatsActivated = false
 # period in minutes
