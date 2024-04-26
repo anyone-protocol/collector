@@ -361,7 +361,7 @@ server {
 
   listen 0.0.0.0:80;
 
-  lo  cation / {
+  location / {
     try_files $uri $uri/ =404;
   }
 
