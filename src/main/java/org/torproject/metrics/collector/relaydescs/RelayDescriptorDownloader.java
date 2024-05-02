@@ -329,12 +329,12 @@ public class RelayDescriptorDownloader {
      * extra-info descriptors from. */
     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     long now = System.currentTimeMillis();
-    this.currentValidAfter = format.format((now / (60L * 60L * 1000L))
-        * (60L * 60L * 1000L));
-    this.descriptorCutOff = format.format(now - 30L * 60L * 60L * 1000L);
+    this.currentValidAfter = format.format((now / (5L * 60L * 1000L))
+        * (5L * 60L * 1000L));
+    this.descriptorCutOff = format.format(now - 30L * 5L * 60L * 1000L);
     this.currentTimestamp = format.format(now);
     this.downloadAllDescriptorsCutOff = format.format(now
-        - 23L * 60L * 60L * 1000L - 30L * 60L * 1000L);
+        - 23L * 5L * 60L * 1000L - 2L * 60L * 1000L);
 
     /* Read list of missing descriptors from disk and memorize those that
      * we are interested in and that are likely to be found on the
