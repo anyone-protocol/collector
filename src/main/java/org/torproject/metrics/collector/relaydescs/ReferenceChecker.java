@@ -295,8 +295,6 @@ public class ReferenceChecker {
     }
     double totalMissingDescriptorsWeight = 0.0;
     Set<String> missingDescriptors = new TreeSet<>();
-    StringBuilder sb = new StringBuilder("Missing referenced "
-        + "descriptors:");
     for (Reference reference : this.references) {
       if (reference.referenced.length() > 0
           && !knownDescriptors.contains(reference.referenced)) {
@@ -304,12 +302,8 @@ public class ReferenceChecker {
           totalMissingDescriptorsWeight += reference.weight;
         }
         missingDescriptors.add(reference.referenced);
-        sb.append(String.format("%n%s -> %s (%.4f -> %.4f)",
-            reference.referencing, reference.referenced, reference.weight,
-            totalMissingDescriptorsWeight));
       }
     }
-    logger.info(sb.toString());
     if (totalMissingDescriptorsWeight > 0.999) {
       logger.warn("Missing too many referenced descriptors ({}).",
           totalMissingDescriptorsWeight);
@@ -325,4 +319,3 @@ public class ReferenceChecker {
     }
   }
 }
-
