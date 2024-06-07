@@ -22,6 +22,7 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -148,20 +149,22 @@ public class MainTest {
    * All properties specified have to be present but nothing else. */
   @Test()
   public void testPropertiesFile() throws Exception {
-    Properties props = new Properties();
-    props.load(getClass().getClassLoader().getResourceAsStream(
-        Main.CONF_FILE));
-    for (Key key : Key.values()) {
-      assertNotNull("Property '" + key.name() + "' not specified in "
-          + Main.CONF_FILE + ".",
-          props.getProperty(key.name()));
-    }
-    for (String propName : props.stringPropertyNames()) {
-      try {
-        Key.valueOf(propName);
-      } catch (IllegalArgumentException ex) {
-        fail("Invalid property name '" + propName + "' found in "
-            + Main.CONF_FILE + ".");
+    try (InputStream is = getClass().getClassLoader().getResourceAsStream(
+            Main.CONF_FILE)) {
+      Properties props = new Properties();
+      props.load(is);
+      for (Key key : Key.values()) {
+        assertNotNull("Property '" + key.name() + "' not specified in "
+                        + Main.CONF_FILE + ".",
+                props.getProperty(key.name()));
+      }
+      for (String propName : props.stringPropertyNames()) {
+        try {
+          Key.valueOf(propName);
+        } catch (IllegalArgumentException ex) {
+          fail("Invalid property name '" + propName + "' found in "
+                  + Main.CONF_FILE + ".");
+        }
       }
     }
   }
