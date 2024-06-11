@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -114,14 +115,16 @@ public class Main {
 
   private static void writeDefaultConfig(Path confPath) {
     try {
-      Files.copy(Main.class.getClassLoader().getResource(CONF_FILE)
-          .openStream(), confPath, StandardCopyOption.REPLACE_EXISTING);
-      printUsage("Could not find config file. In the default "
-          + "configuration, we are not configured to read data from any "
-          + "data source or write data to any data sink. You need to "
-          + "change the configuration (" + CONF_FILE
-          + ") and provide at least one data source and one data sink. "
-          + "Refer to the manual for more information.");
+      try (InputStream is = Main.class.getClassLoader().getResource(CONF_FILE)
+                   .openStream()) {
+        Files.copy(is, confPath, StandardCopyOption.REPLACE_EXISTING);
+        printUsage("Could not find config file. In the default "
+                + "configuration, we are not configured to read data from any "
+                + "data source or write data to any data sink. You need to "
+                + "change the configuration (" + CONF_FILE
+                + ") and provide at least one data source and one data sink. "
+                + "Refer to the manual for more information.");
+      }
     } catch (IOException e) {
       logger.error("Cannot write default configuration.", e);
       throw new RuntimeException(e);
