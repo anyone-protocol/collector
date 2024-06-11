@@ -37,26 +37,27 @@ public class Downloader {
    */
   public static byte[] downloadFromHttpServer(URL url, boolean isDeflated)
       throws IOException {
-    ByteArrayOutputStream downloadedBytes = new ByteArrayOutputStream();
-    HttpURLConnection huc = (HttpURLConnection) url.openConnection();
-    huc.setRequestMethod("GET");
-    huc.setReadTimeout(5000);
-    huc.connect();
-    int response = huc.getResponseCode();
-    if (response != 200) {
-      return null;
-    }
-    try (BufferedInputStream in = isDeflated
-        ? new BufferedInputStream(new InflaterInputStream(
-            huc.getInputStream()))
-        : new BufferedInputStream(huc.getInputStream())) {
-      int len;
-      byte[] data = new byte[1024];
-      while ((len = in.read(data, 0, 1024)) >= 0) {
-        downloadedBytes.write(data, 0, len);
+    try (ByteArrayOutputStream downloadedBytes = new ByteArrayOutputStream()) {
+      HttpURLConnection huc = (HttpURLConnection) url.openConnection();
+      huc.setRequestMethod("GET");
+      huc.setReadTimeout(5000);
+      huc.connect();
+      int response = huc.getResponseCode();
+      if (response != 200) {
+        return null;
       }
+      try (BufferedInputStream in = isDeflated
+              ? new BufferedInputStream(new InflaterInputStream(
+              huc.getInputStream()))
+              : new BufferedInputStream(huc.getInputStream())) {
+        int len;
+        byte[] data = new byte[1024];
+        while ((len = in.read(data, 0, 1024)) >= 0) {
+          downloadedBytes.write(data, 0, len);
+        }
+      }
+      return downloadedBytes.toByteArray();
     }
-    return downloadedBytes.toByteArray();
   }
 }
 

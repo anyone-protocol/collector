@@ -214,88 +214,90 @@ public class SanitizedBridgesWriter extends CollecTorMain {
                   + datePart.substring(13, 15) + ":"
                   + datePart.substring(15, 17);
               while ((tais.getNextTarEntry()) != null) {
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                int len;
-                byte[] data = new byte[1024];
-                while ((len = bis.read(data, 0, 1024)) >= 0) {
-                  baos.write(data, 0, len);
-                }
-                byte[] allData = baos.toByteArray();
-                if (allData.length == 0) {
-                  continue;
-                }
-                String fileDigest = Hex.encodeHexString(DigestUtils.sha1(
-                    allData));
-                String ascii = new String(allData, StandardCharsets.US_ASCII);
-                BufferedReader br3 = new BufferedReader(new StringReader(
-                    ascii));
-                String firstLine;
-                do {
-                  firstLine = br3.readLine();
-                } while (firstLine != null && firstLine.startsWith("@"));
-                if (firstLine == null) {
-                  continue;
-                }
-                if (firstLine.startsWith("published ")
-                    || firstLine.startsWith("flag-thresholds ")
-                    || firstLine.startsWith("r ")) {
-                  this.sanitizeAndStoreNetworkStatus(allData, dateTime,
-                      authorityFingerprint);
-                  parsedStatuses++;
-                } else if (descriptorImportHistory.contains(fileDigest)) {
-                  /* Skip server descriptors or extra-info descriptors if
-                   * we parsed them before. */
-                  skippedFiles++;
-                  continue;
-                } else {
-                  int start;
-                  int sig;
-                  int end = -1;
-                  String startToken = firstLine.startsWith("router ")
-                      ? "router " : "extra-info ";
-                  String sigToken = "\nrouter-signature\n";
-                  String endToken = "\n-----END SIGNATURE-----\n";
-                  while (end < ascii.length()) {
-                    start = ascii.indexOf(startToken, end);
-                    if (start < 0) {
-                      break;
-                    }
-                    sig = ascii.indexOf(sigToken, start);
-                    if (sig < 0) {
-                      break;
-                    }
-                    sig += sigToken.length();
-                    end = ascii.indexOf(endToken, sig);
-                    if (end < 0) {
-                      break;
-                    }
-                    end += endToken.length();
-                    byte[] descBytes = new byte[end - start];
-                    System.arraycopy(allData, start, descBytes, 0,
-                        end - start);
-                    String descriptorDigest = Hex.encodeHexString(
-                        DigestUtils.sha1(descBytes));
-                    if (!descriptorImportHistory.contains(
-                        descriptorDigest)) {
-                      descriptorImportHistory.add(descriptorDigest);
-                      if (firstLine.startsWith("router ")) {
-                        this.sanitizeAndStoreServerDescriptor(descBytes);
-                        parsedServerDescriptors++;
-                      } else {
-                        this.sanitizeAndStoreExtraInfoDescriptor(descBytes);
-                        parsedExtraInfoDescriptors++;
+                try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+                  int len;
+                  byte[] data = new byte[1024];
+                  while ((len = bis.read(data, 0, 1024)) >= 0) {
+                    baos.write(data, 0, len);
+                  }
+                  byte[] allData = baos.toByteArray();
+                  if (allData.length == 0) {
+                    continue;
+                  }
+                  String fileDigest = Hex.encodeHexString(DigestUtils.sha1(
+                          allData));
+                  String ascii = new String(allData, StandardCharsets.US_ASCII);
+                  BufferedReader br3 = new BufferedReader(new StringReader(
+                          ascii));
+                  String firstLine;
+
+                  do {
+                    firstLine = br3.readLine();
+                  } while (firstLine != null && firstLine.startsWith("@"));
+                  if (firstLine == null) {
+                    continue;
+                  }
+                  if (firstLine.startsWith("published ")
+                          || firstLine.startsWith("flag-thresholds ")
+                          || firstLine.startsWith("r ")) {
+                    this.sanitizeAndStoreNetworkStatus(allData, dateTime,
+                            authorityFingerprint);
+                    parsedStatuses++;
+                  } else if (descriptorImportHistory.contains(fileDigest)) {
+                    /* Skip server descriptors or extra-info descriptors if
+                     * we parsed them before. */
+                    skippedFiles++;
+                    continue;
+                  } else {
+                    int start;
+                    int sig;
+                    int end = -1;
+                    String startToken = firstLine.startsWith("router ")
+                            ? "router " : "extra-info ";
+                    String sigToken = "\nrouter-signature\n";
+                    String endToken = "\n-----END SIGNATURE-----\n";
+                    while (end < ascii.length()) {
+                      start = ascii.indexOf(startToken, end);
+                      if (start < 0) {
+                        break;
                       }
-                    } else {
-                      if (firstLine.startsWith("router ")) {
-                        skippedServerDescriptors++;
+                      sig = ascii.indexOf(sigToken, start);
+                      if (sig < 0) {
+                        break;
+                      }
+                      sig += sigToken.length();
+                      end = ascii.indexOf(endToken, sig);
+                      if (end < 0) {
+                        break;
+                      }
+                      end += endToken.length();
+                      byte[] descBytes = new byte[end - start];
+                      System.arraycopy(allData, start, descBytes, 0,
+                              end - start);
+                      String descriptorDigest = Hex.encodeHexString(
+                              DigestUtils.sha1(descBytes));
+                      if (!descriptorImportHistory.contains(
+                              descriptorDigest)) {
+                        descriptorImportHistory.add(descriptorDigest);
+                        if (firstLine.startsWith("router ")) {
+                          this.sanitizeAndStoreServerDescriptor(descBytes);
+                          parsedServerDescriptors++;
+                        } else {
+                          this.sanitizeAndStoreExtraInfoDescriptor(descBytes);
+                          parsedExtraInfoDescriptors++;
+                        }
                       } else {
-                        skippedExtraInfoDescriptors++;
+                        if (firstLine.startsWith("router ")) {
+                          skippedServerDescriptors++;
+                        } else {
+                          skippedExtraInfoDescriptors++;
+                        }
                       }
                     }
                   }
+                  descriptorImportHistory.add(fileDigest);
+                  parsedFiles++;
                 }
-                descriptorImportHistory.add(fileDigest);
-                parsedFiles++;
               }
               bis.close();
             }

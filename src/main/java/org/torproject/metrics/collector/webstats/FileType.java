@@ -74,12 +74,13 @@ public enum FileType {
    * Compresses the given bytes in memory and returns the compressed bytes.
    */
   public byte[] compress(byte[] bytes) throws Exception {
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    try (OutputStream os = this.outputStream(baos)) {
-      os.write(bytes);
-      os.flush();
+    try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+      try (OutputStream os = this.outputStream(baos)) {
+        os.write(bytes);
+        os.flush();
+      }
+      return baos.toByteArray();
     }
-    return baos.toByteArray();
   }
 
   /**
