@@ -119,126 +119,127 @@ public class CachedRelayDescriptorReader {
           // determine digests
           BufferedInputStream bis =
               new BufferedInputStream(new FileInputStream(f));
-          ByteArrayOutputStream baos = new ByteArrayOutputStream();
-          int len;
-          byte[] data = new byte[1024];
-          while ((len = bis.read(data, 0, 1024)) >= 0) {
-            baos.write(data, 0, len);
-          }
-          bis.close();
-          byte[] allData = baos.toByteArray();
-          if (f.getName().equals("cached-consensus")) {
-            /* Check if directory information is stale. */
-            BufferedReader br = new BufferedReader(new StringReader(
-                new String(allData, StandardCharsets.US_ASCII)));
-            String line;
-            while ((line = br.readLine()) != null) {
-              if (line.startsWith("valid-after ")) {
-                this.dumpStats.append("\n").append(f.getName()).append(": ")
-                    .append(line.substring("valid-after ".length()));
-                SimpleDateFormat dateTimeFormat =
-                    new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                if (dateTimeFormat.parse(line.substring("valid-after "
-                    .length())).getTime() < System.currentTimeMillis()
-                    - 6L * 60L * 60L * 1000L) {
-                  logger.warn("Cached descriptor files in {} are stale. The "
-                      + "valid-after line in cached-consensus is '{}'.",
-                      cachedDescDir.getAbsolutePath(), line);
-                  this.dumpStats.append(" (stale!)");
+          try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            int len;
+            byte[] data = new byte[1024];
+            while ((len = bis.read(data, 0, 1024)) >= 0) {
+              baos.write(data, 0, len);
+            }
+            bis.close();
+            byte[] allData = baos.toByteArray();
+            if (f.getName().equals("cached-consensus")) {
+              /* Check if directory information is stale. */
+              BufferedReader br = new BufferedReader(new StringReader(
+                      new String(allData, StandardCharsets.US_ASCII)));
+              String line;
+              while ((line = br.readLine()) != null) {
+                if (line.startsWith("valid-after ")) {
+                  this.dumpStats.append("\n").append(f.getName()).append(": ")
+                          .append(line.substring("valid-after ".length()));
+                  SimpleDateFormat dateTimeFormat =
+                          new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                  if (dateTimeFormat.parse(line.substring("valid-after "
+                          .length())).getTime() < System.currentTimeMillis()
+                          - 6L * 60L * 60L * 1000L) {
+                    logger.warn("Cached descriptor files in {} are stale. The "
+                                    + "valid-after line in cached-consensus is '{}'.",
+                            cachedDescDir.getAbsolutePath(), line);
+                    this.dumpStats.append(" (stale!)");
+                  }
+                  break;
                 }
-                break;
               }
-            }
-            br.close();
+              br.close();
 
-            /* Parse the cached consensus if we haven't parsed it before
-             * (but regardless of whether it's stale or not). */
-            String digest = Hex.encodeHexString(DigestUtils.sha1(
-                allData));
-            if (!this.lastImportHistory.contains(digest)
-                && !this.currentImportHistory.contains(digest)) {
-              this.rdp.parse(allData, null);
-            } else {
-              this.dumpStats.append(" (skipped)");
-            }
-            this.currentImportHistory.add(digest);
-          } else if (f.getName().equals("v3-status-votes")) {
-            int parsedNum = 0;
-            int skippedNum = 0;
-            String ascii = new String(allData, StandardCharsets.US_ASCII);
-            String startToken = "network-status-version ";
-            int end = ascii.length();
-            int start = ascii.indexOf(startToken);
-            while (start >= 0 && start < end) {
-              int next = ascii.indexOf(startToken, start + 1);
-              if (next < 0) {
-                next = end;
+              /* Parse the cached consensus if we haven't parsed it before
+               * (but regardless of whether it's stale or not). */
+              String digest = Hex.encodeHexString(DigestUtils.sha1(
+                      allData));
+              if (!this.lastImportHistory.contains(digest)
+                      && !this.currentImportHistory.contains(digest)) {
+                this.rdp.parse(allData, null);
+              } else {
+                this.dumpStats.append(" (skipped)");
               }
-              if (start < next) {
-                byte[] rawNetworkStatusBytes = new byte[next - start];
-                System.arraycopy(allData, start, rawNetworkStatusBytes, 0,
-                    next - start);
+              this.currentImportHistory.add(digest);
+            } else if (f.getName().equals("v3-status-votes")) {
+              int parsedNum = 0;
+              int skippedNum = 0;
+              String ascii = new String(allData, StandardCharsets.US_ASCII);
+              String startToken = "network-status-version ";
+              int end = ascii.length();
+              int start = ascii.indexOf(startToken);
+              while (start >= 0 && start < end) {
+                int next = ascii.indexOf(startToken, start + 1);
+                if (next < 0) {
+                  next = end;
+                }
+                if (start < next) {
+                  byte[] rawNetworkStatusBytes = new byte[next - start];
+                  System.arraycopy(allData, start, rawNetworkStatusBytes, 0,
+                          next - start);
+                  String digest = Hex.encodeHexString(DigestUtils.sha1(
+                          rawNetworkStatusBytes));
+                  if (!this.lastImportHistory.contains(digest)
+                          && !this.currentImportHistory.contains(digest)) {
+                    this.rdp.parse(rawNetworkStatusBytes, null);
+                    parsedNum++;
+                  } else {
+                    skippedNum++;
+                  }
+                  this.currentImportHistory.add(digest);
+                }
+                start = next;
+              }
+              this.dumpStats.append("\n").append(f.getName()).append(": parsed ")
+                      .append(parsedNum).append(", skipped ").append(skippedNum)
+                      .append(" votes");
+            } else if (f.getName().startsWith("cached-descriptors")
+                    || f.getName().startsWith("cached-extrainfo")) {
+              String ascii = new String(allData, StandardCharsets.US_ASCII);
+              int start;
+              int sig;
+              int end = -1;
+              String startToken =
+                      f.getName().startsWith("cached-descriptors")
+                              ? "router " : "extra-info ";
+              String sigToken = "\nrouter-signature\n";
+              String endToken = "\n-----END SIGNATURE-----\n";
+              int parsedNum = 0;
+              int skippedNum = 0;
+              while (end < ascii.length()) {
+                start = ascii.indexOf(startToken, end);
+                if (start < 0) {
+                  break;
+                }
+                sig = ascii.indexOf(sigToken, start);
+                if (sig < 0) {
+                  break;
+                }
+                sig += sigToken.length();
+                end = ascii.indexOf(endToken, sig);
+                if (end < 0) {
+                  break;
+                }
+                end += endToken.length();
+                byte[] descBytes = new byte[end - start];
+                System.arraycopy(allData, start, descBytes, 0, end - start);
                 String digest = Hex.encodeHexString(DigestUtils.sha1(
-                    rawNetworkStatusBytes));
+                        descBytes));
                 if (!this.lastImportHistory.contains(digest)
-                    && !this.currentImportHistory.contains(digest)) {
-                  this.rdp.parse(rawNetworkStatusBytes, null);
+                        && !this.currentImportHistory.contains(digest)) {
+                  this.rdp.parse(descBytes, null);
                   parsedNum++;
                 } else {
                   skippedNum++;
                 }
                 this.currentImportHistory.add(digest);
               }
-              start = next;
+              this.dumpStats.append("\n").append(f.getName()).append(": parsed ")
+                      .append(parsedNum).append(", skipped ").append(skippedNum)
+                      .append(" ").append(f.getName().startsWith("cached-descriptors")
+                              ? "server" : "extra-info").append(" descriptors");
             }
-            this.dumpStats.append("\n").append(f.getName()).append(": parsed ")
-                .append(parsedNum).append(", skipped ").append(skippedNum)
-                .append(" votes");
-          } else if (f.getName().startsWith("cached-descriptors")
-              || f.getName().startsWith("cached-extrainfo")) {
-            String ascii = new String(allData, StandardCharsets.US_ASCII);
-            int start;
-            int sig;
-            int end = -1;
-            String startToken =
-                f.getName().startsWith("cached-descriptors")
-                    ? "router " : "extra-info ";
-            String sigToken = "\nrouter-signature\n";
-            String endToken = "\n-----END SIGNATURE-----\n";
-            int parsedNum = 0;
-            int skippedNum = 0;
-            while (end < ascii.length()) {
-              start = ascii.indexOf(startToken, end);
-              if (start < 0) {
-                break;
-              }
-              sig = ascii.indexOf(sigToken, start);
-              if (sig < 0) {
-                break;
-              }
-              sig += sigToken.length();
-              end = ascii.indexOf(endToken, sig);
-              if (end < 0) {
-                break;
-              }
-              end += endToken.length();
-              byte[] descBytes = new byte[end - start];
-              System.arraycopy(allData, start, descBytes, 0, end - start);
-              String digest = Hex.encodeHexString(DigestUtils.sha1(
-                  descBytes));
-              if (!this.lastImportHistory.contains(digest)
-                  && !this.currentImportHistory.contains(digest)) {
-                this.rdp.parse(descBytes, null);
-                parsedNum++;
-              } else {
-                skippedNum++;
-              }
-              this.currentImportHistory.add(digest);
-            }
-            this.dumpStats.append("\n").append(f.getName()).append(": parsed ")
-                .append(parsedNum).append(", skipped ").append(skippedNum)
-                .append(" ").append(f.getName().startsWith("cached-descriptors")
-                ? "server" : "extra-info").append(" descriptors");
           }
         } catch (IOException | ParseException e) {
           logger.warn("Failed reading {} directory.",

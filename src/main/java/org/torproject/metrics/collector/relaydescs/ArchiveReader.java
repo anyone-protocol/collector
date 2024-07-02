@@ -132,23 +132,24 @@ public class ArchiveReader {
               FileInputStream fis = new FileInputStream(pop);
               bis = new BufferedInputStream(fis);
             }
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            int len;
-            byte[] data = new byte[1024];
-            while ((len = bis.read(data, 0, 1024)) >= 0) {
-              baos.write(data, 0, len);
+            try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+              int len;
+              byte[] data = new byte[1024];
+              while ((len = bis.read(data, 0, 1024)) >= 0) {
+                baos.write(data, 0, len);
+              }
+              bis.close();
+              byte[] allData = baos.toByteArray();
+              boolean stored = this.rdp.parse(allData, pop);
+              if (!stored) {
+                filesToRetry.add(pop);
+                continue;
+              }
+              if (this.keepImportHistory) {
+                this.archivesImportHistory.add(pop.getName());
+              }
+              this.parsedFiles++;
             }
-            bis.close();
-            byte[] allData = baos.toByteArray();
-            boolean stored = this.rdp.parse(allData, pop);
-            if (!stored) {
-              filesToRetry.add(pop);
-              continue;
-            }
-            if (this.keepImportHistory) {
-              this.archivesImportHistory.add(pop.getName());
-            }
-            this.parsedFiles++;
           } catch (IOException e) {
             problems.add(pop);
             if (problems.size() > 3) {
@@ -174,7 +175,7 @@ public class ArchiveReader {
             FileInputStream fis = new FileInputStream(pop);
             bis = new BufferedInputStream(fis);
           }
-          ByteArrayOutputStream baos = new ByteArrayOutputStream();
+          try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
           int len;
           byte[] data = new byte[1024];
           while ((len = bis.read(data, 0, 1024)) >= 0) {
@@ -219,26 +220,27 @@ public class ArchiveReader {
             byte[] descBytes = new byte[end - start];
             System.arraycopy(allData, start, descBytes, 0, end - start);
             String digest256Base64 = Base64.encodeBase64String(
-                DigestUtils.sha256(descBytes)).replaceAll("=", "");
+                    DigestUtils.sha256(descBytes)).replaceAll("=", "");
             String digest256Hex = DigestUtils.sha256Hex(descBytes);
             if (!this.microdescriptorValidAfterTimes.containsKey(
-                digest256Hex)) {
+                    digest256Hex)) {
               logger.debug("Could not store microdescriptor '{}', which was "
-                  + "not contained in a microdesc consensus.", digest256Hex);
+                      + "not contained in a microdesc consensus.", digest256Hex);
               continue;
             }
             for (String validAfterTime :
-                this.microdescriptorValidAfterTimes.get(digest256Hex)) {
+                    this.microdescriptorValidAfterTimes.get(digest256Hex)) {
               try {
                 long validAfter =
-                    parseFormat.parse(validAfterTime).getTime();
+                        parseFormat.parse(validAfterTime).getTime();
                 rdp.storeMicrodescriptor(descBytes, digest256Hex,
-                    digest256Base64, validAfter);
+                        digest256Base64, validAfter);
               } catch (ParseException e) {
                 logger.warn("Could not parse valid-after time '{}'. Not "
-                    + "storing microdescriptor.", validAfterTime, e);
+                        + "storing microdescriptor.", validAfterTime, e);
               }
             }
+          }
           }
           if (this.keepImportHistory) {
             this.archivesImportHistory.add(pop.getName());

@@ -207,9 +207,10 @@ public class ArchiveWriter extends CollecTorMain {
 
     this.saveDescriptorDigests();
 
-    new ReferenceChecker(Paths.get(recentPathName, RELAY_DESCRIPTORS).toFile(),
-        new File(statsDir, "references"),
-        new File(statsDir, "references-history")).check();
+    // disable useless
+//    new ReferenceChecker(Paths.get(recentPathName, RELAY_DESCRIPTORS).toFile(),
+//        new File(statsDir, "references"),
+//        new File(statsDir, "references-history")).check();
     CollecTorMain.checkAvailableSpace(recentPath);
     cleanUp();
   }
@@ -561,9 +562,9 @@ public class ArchiveWriter extends CollecTorMain {
   public void cleanUpDirectories() {
     PersistenceUtils.cleanDirectory(
         Paths.get(recentPathName, RELAY_DESCRIPTORS),
-        Instant.now().minus(3, ChronoUnit.DAYS).toEpochMilli());
+        Instant.now().minus(2, ChronoUnit.DAYS).toEpochMilli());
     PersistenceUtils.cleanDirectory(Paths.get(outputDirectory),
-        Instant.now().minus(49, ChronoUnit.DAYS).toEpochMilli(),
+        Instant.now().minus(39, ChronoUnit.DAYS).toEpochMilli(),
         Paths.get(this.outputDirectory, "certs"));
   }
 
@@ -870,17 +871,17 @@ public class ArchiveWriter extends CollecTorMain {
             logger.debug("Appending to existing descriptor file {}.",
                 outputFile);
           } else {
-            logger.warn("Overwriting existing descriptor file {}.",
+            logger.debug("Overwriting existing descriptor file {}.",
                 outputFile);
           }
         }
-        BufferedOutputStream bos = new BufferedOutputStream(
-            new FileOutputStream(outputFile, appendToFile));
-        if (data.length > 0 && data[0] != '@') {
-          bos.write(typeAnnotation, 0, typeAnnotation.length);
+        try (BufferedOutputStream bos = new BufferedOutputStream(
+            new FileOutputStream(outputFile, appendToFile))) {
+          if (data.length > 0 && data[0] != '@') {
+            bos.write(typeAnnotation, 0, typeAnnotation.length);
+          }
+          bos.write(data, 0, data.length);
         }
-        bos.write(data, 0, data.length);
-        bos.close();
       }
       return true;
     } catch (IOException e) {

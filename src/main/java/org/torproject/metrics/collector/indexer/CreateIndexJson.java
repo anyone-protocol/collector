@@ -283,8 +283,9 @@ public class CreateIndexJson extends CollecTorMain {
   private SortedMap<Path, FileNode> readIndex() throws IOException {
     SortedMap<Path, FileNode> index = new TreeMap<>();
     if (Files.exists(this.indexJsonPath)) {
-      IndexNode indexNode = objectMapper.readValue(
-          Files.newInputStream(this.indexJsonPath), IndexNode.class);
+      try (InputStream is = Files.newInputStream(this.indexJsonPath)) {
+      IndexNode indexNode = objectMapper.readValue(is
+          , IndexNode.class);
       SortedMap<Path, DirectoryNode> directoryNodes = new TreeMap<>();
       directoryNodes.put(Paths.get(""), indexNode);
       while (!directoryNodes.isEmpty()) {
@@ -306,6 +307,7 @@ public class CreateIndexJson extends CollecTorMain {
             directoryNodes.put(subdirectoryPath, subdirectoryNode);
           }
         }
+      }
       }
     }
     return index;
