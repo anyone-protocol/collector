@@ -302,6 +302,11 @@ BridgestrapStatsUrl = https://bridges.torproject.org/bridgestrap-collector
         EOH
         destination = "local/collector.properties"
       }
+      
+      service {
+        name     = "collector-jar-dev"
+        tags     = ["logging"]
+      }
     }
 
     task "collector-nginx-dev-task" {
@@ -329,7 +334,7 @@ BridgestrapStatsUrl = https://bridges.torproject.org/bridgestrap-collector
       service {
         name     = "collector-dev"
         provider = "nomad"
-        tags     = ["collector"]
+        tags     = ["collector", "logging"]
         port     = "http-port"
         check {
           name     = "collector nginx http server alive"
