@@ -305,6 +305,7 @@ BridgestrapStatsUrl = https://bridges.torproject.org/bridgestrap-collector
 
       service {
         name     = "collector-jar-live"
+        provider = "nomad"
         tags     = ["logging"]
       }
     }
