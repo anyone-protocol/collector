@@ -305,7 +305,6 @@ BridgestrapStatsUrl = https://bridges.torproject.org/bridgestrap-collector
 
       service {
         name     = "collector-jar-stage"
-        provider = "nomad"
         tags     = ["logging"]
       }
     }
@@ -334,7 +333,6 @@ BridgestrapStatsUrl = https://bridges.torproject.org/bridgestrap-collector
 
       service {     
         name     = "collector-stage"
-        provider = "nomad"
         tags     = ["collector", "logging"]
         port     = "http-port"
         check {
