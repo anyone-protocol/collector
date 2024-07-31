@@ -18,7 +18,7 @@ jobs:
         with:
           docker-username: ${{ secrets.DOCKER_HUB_USERNAME }}
           docker-password: ${{ secrets.DOCKER_HUB_PASSWORD }}
-          docker-tag: latest-dev
+          docker-tag: ${{ github.sha }}
       - name: Deploy
         uses: ./.github/actions/deploy
         with:
@@ -26,3 +26,4 @@ jobs:
           nomad-cacert: operations/admin-ui-ca.crt
           nomad-token: ${{ secrets.NOMAD_TOKEN_COLLECTOR_DEPLOY }}
           nomad-addr: ${{ secrets.NOMAD_DEPLOY_ADDR }}
+          docker-tag: ${{ github.sha }}
