@@ -129,7 +129,7 @@ public class OnionPerfDownloader extends CollecTorMain {
   private void downloadFromOnionPerfHost(URL baseUrl) {
     logger.info("Downloading from OnionPerf host {}", baseUrl);
     this.downloadOnionPerfDirectoryListing(baseUrl);
-    String source = baseUrl.getHost().split("\\.")[0];
+    String source = baseUrl.getHost().split(":")[0]; // anon has ip + port instead hostname
     if (this.tpfFileUrls.containsKey(baseUrl)) {
       for (String tpfFileName : this.tpfFileUrls.get(baseUrl)) {
         this.downloadAndParseOnionPerfTpfFile(baseUrl, source, tpfFileName);
@@ -392,11 +392,12 @@ public class OnionPerfDownloader extends CollecTorMain {
         break;
       }
       TorperfResult torperf = (TorperfResult) descriptor;
-      if (!source.equals(torperf.getSource())) {
-        message = "File contains transfer from another source: "
-            + torperf.getSource();
-        break;
-      }
+      // not applicable for Anon
+//      if (!source.equals(torperf.getSource())) {
+//        message = "File contains transfer from another source: "
+//            + torperf.getSource();
+//        break;
+//      }
     }
     if (null != message) {
       logger.warn("OnionPerf file '{}{}' was found to be invalid: {}. "
