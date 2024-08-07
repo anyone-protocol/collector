@@ -40,7 +40,7 @@ job "collector-stage" {
       }
 
       config {
-        image   = "svforte/collector:latest-stage"
+        image   = "ghcr.io/ator-development/collector:DEPLOY_TAG"
         force_pull = true
         volumes = [
           "local/collector.properties:/srv/collector/collector.properties:ro",

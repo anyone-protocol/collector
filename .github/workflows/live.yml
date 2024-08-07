@@ -10,18 +10,12 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Log in to Github Container Registry
-        uses: docker/login-action@v3
+      - name: Build and push
+        uses: ./.github/actions/build-and-push
         with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
-      - name: Tag latest
-        run: |
-          docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/collector:latest-stage
-          docker tag ${{ secrets.DOCKER_HUB_USERNAME }}/collector:latest-stage ${{ secrets.DOCKER_HUB_USERNAME }}/collector:latest
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/collector:latest
+          docker-username: ${{ secrets.CR_USERNAME }}
+          docker-password: ${{ secrets.CR_PAT }}
+          docker-tag: ${{ github.sha }}
       - name: Deploy
         uses: ./.github/actions/deploy
         with:
@@ -29,3 +23,4 @@ jobs:
           nomad-cacert: operations/admin-ui-ca.crt
           nomad-token: ${{ secrets.NOMAD_TOKEN_COLLECTOR_DEPLOY }}
           nomad-addr: ${{ secrets.NOMAD_DEPLOY_ADDR }}
+          docker-tag: ${{ github.sha }}
