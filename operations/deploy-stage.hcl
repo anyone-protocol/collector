@@ -174,7 +174,7 @@ KeepDirectoryArchiveImportHistory = true
 #
 ## Comma separated list of directory authority addresses (IP[:port]) to
 ## download missing relay descriptors from
-DirectoryAuthoritiesAddresses = 88.99.219.105:9130,176.9.29.53:9130,95.216.32.105:9130
+DirectoryAuthoritiesAddresses = 88.99.219.105:9130,176.9.29.53:9130,95.216.32.105:9130,176.9.29.53:9131,95.216.32.105:9131,176.9.29.53:9132,95.216.32.105:9132
 #
 ## Comma separated list of directory authority fingerprints to download
 ## votes
