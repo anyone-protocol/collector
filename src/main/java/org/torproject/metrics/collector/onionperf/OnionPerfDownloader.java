@@ -129,7 +129,10 @@ public class OnionPerfDownloader extends CollecTorMain {
   private void downloadFromOnionPerfHost(URL baseUrl) {
     logger.info("Downloading from OnionPerf host {}", baseUrl);
     this.downloadOnionPerfDirectoryListing(baseUrl);
-    String source = baseUrl.getHost().split(":")[0]; // anon has ip + port instead hostname
+    String source = baseUrl.getHost().contains("collector.torproject.org")
+            ? "torproject"
+            : baseUrl.getHost().split(":")[0]; // anon has ip + port instead hostname
+    logger.info("Source: {}", source);
     if (this.tpfFileUrls.containsKey(baseUrl)) {
       for (String tpfFileName : this.tpfFileUrls.get(baseUrl)) {
         this.downloadAndParseOnionPerfTpfFile(baseUrl, source, tpfFileName);
@@ -138,8 +141,10 @@ public class OnionPerfDownloader extends CollecTorMain {
     if (this.onionPerfAnalysisFileUrls.containsKey(baseUrl)) {
       for (String onionPerfAnalysisFileName
           : this.onionPerfAnalysisFileUrls.get(baseUrl)) {
-        this.downloadAndParseOnionPerfAnalysisFile(baseUrl, source,
-            onionPerfAnalysisFileName);
+
+        String sourceAdjusted = source.equals("torproject") ? onionPerfAnalysisFileName.split("\\.")[1] : source;
+        logger.info("Source adjusted: {}", sourceAdjusted);
+        this.downloadAndParseOnionPerfAnalysisFile(baseUrl, sourceAdjusted, onionPerfAnalysisFileName);
       }
     }
   }
@@ -152,6 +157,9 @@ public class OnionPerfDownloader extends CollecTorMain {
       Pattern.compile(
       ".*<a href=\"([0-9-]{10}\\.onionperf\\.analysis\\.json\\.xz)\">.*");
 
+  private static final Pattern ONIONPERF_TOR_ANALYSIS_FILE_URL_PATTERN =
+  Pattern.compile(".*<a href=\"([0-9-]{10}\\.op-[a-z0-9]{4}(-[a-z]+)?\\.onionperf\\.analysis\\.json\\.xz)\".*");
+
   private void downloadOnionPerfDirectoryListing(URL baseUrl) {
     try (BufferedReader br = new BufferedReader(new InputStreamReader(
         baseUrl.openStream()))) {
@@ -163,8 +171,9 @@ public class OnionPerfDownloader extends CollecTorMain {
           this.tpfFileUrls.putIfAbsent(baseUrl, new ArrayList<>());
           this.tpfFileUrls.get(baseUrl).add(tpfFileMatcher.group(1));
         }
-        Matcher onionPerfAnalysisFileMatcher
-            = ONIONPERF_ANALYSIS_FILE_URL_PATTERN.matcher(line);
+        Matcher onionPerfAnalysisFileMatcher = baseUrl.getHost().contains("collector.torproject.org")
+                ? ONIONPERF_TOR_ANALYSIS_FILE_URL_PATTERN.matcher(line)
+                : ONIONPERF_ANALYSIS_FILE_URL_PATTERN.matcher(line);
         if (onionPerfAnalysisFileMatcher.matches()
             && !onionPerfAnalysisFileMatcher.group(1).startsWith("/")) {
           this.onionPerfAnalysisFileUrls.putIfAbsent(baseUrl,
