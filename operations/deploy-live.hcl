@@ -50,7 +50,7 @@ job "collector-live" {
 
       resources {
         cpu    = 256
-        memory = 1024
+        memory = 2048
       }
 
       template {
@@ -250,7 +250,7 @@ OnionPerfSyncOrigins = https://collector.torproject.org
 ## source name, e.g., SOURCE=first for the first URL below, SOURCE=second for
 ## the second, etc.:
 ## OnionPerfHosts = http://first.torproject.org/, http://second.torproject.org/
-OnionPerfHosts = http://5.78.94.15:9222/,http://5.161.108.187:9222/,http://5.161.228.187:9222/
+OnionPerfHosts = http://5.78.90.106:9222/,http://5.161.108.187:9222/,http://49.13.145.234:9222/,https://collector.torproject.org/recent/onionperf/
 ######## Tor Weblogs ########
 #
 ## Define descriptor sources

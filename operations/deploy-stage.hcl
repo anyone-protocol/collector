@@ -91,11 +91,11 @@ RelaydescsPeriodMinutes = 5
 # offset in minutes since the epoch and
 RelaydescsOffsetMinutes = 0
 ## the following defines, if this module is activated
-OnionPerfActivated = false
+OnionPerfActivated = true
 # period in minutes
-OnionPerfPeriodMinutes = 360
+OnionPerfPeriodMinutes = 10
 # offset in minutes since the epoch and
-OnionPerfOffsetMinutes = 1
+OnionPerfOffsetMinutes = 2
 # the following defines, if this module is activated
 UpdateindexActivated = true
 # period in minutes
@@ -250,7 +250,7 @@ OnionPerfSyncOrigins = https://collector.torproject.org
 ## source name, e.g., SOURCE=first for the first URL below, SOURCE=second for
 ## the second, etc.:
 ## OnionPerfHosts = http://first.torproject.org/, http://second.torproject.org/
-OnionPerfHosts = https://op-us.onionperf.torproject.net/
+OnionPerfHosts = http://95.216.32.105:9221/,http://88.99.219.105:9221/,http://176.9.29.53:9221/,https://collector.torproject.org/recent/onionperf/
 ######## Tor Weblogs ########
 #
 ## Define descriptor sources
