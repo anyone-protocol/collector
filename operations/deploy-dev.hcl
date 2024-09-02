@@ -91,9 +91,9 @@ RelaydescsPeriodMinutes = 1
 # offset in minutes since the epoch and
 RelaydescsOffsetMinutes = 0
 ## the following defines, if this module is activated
-OnionPerfActivated = false
+OnionPerfActivated = true
 # period in minutes
-OnionPerfPeriodMinutes = 360
+OnionPerfPeriodMinutes = 5
 # offset in minutes since the epoch and
 OnionPerfOffsetMinutes = 1
 # the following defines, if this module is activated
@@ -178,7 +178,7 @@ DirectoryAuthoritiesAddresses = 88.99.219.105:9030,176.9.29.53:9030,95.216.32.10
 #
 ## Comma separated list of directory authority fingerprints to download
 ## votes
-DirectoryAuthoritiesFingerprintsForVotes = 148206F447039632ACC1BFE35C57E6106CF6E5E3,4B509397F5D55A8DEE015AAE062F787182A90849,A4B75BC005B7211F0A2E3DEA479D631BEF30CA8C
+DirectoryAuthoritiesFingerprintsForVotes = CDC5115240E378E40AB01F156217AEF5C8135729,4B509397F5D55A8DEE015AAE062F787182A90849,A4B75BC005B7211F0A2E3DEA479D631BEF30CA8C
 #
 ## Download all server descriptors from the directory authorities at most
 ## once a day (only if DownloadRelayDescriptors is true)
@@ -250,7 +250,7 @@ OnionPerfSyncOrigins = https://collector.torproject.org
 ## source name, e.g., SOURCE=first for the first URL below, SOURCE=second for
 ## the second, etc.:
 ## OnionPerfHosts = http://first.torproject.org/, http://second.torproject.org/
-OnionPerfHosts = https://op-us.onionperf.torproject.net/
+OnionPerfHosts = http://95.216.32.105:9220/,http://88.99.219.105:9220/,http://176.9.29.53:9220/,https://collector.torproject.org/recent/onionperf/
 ######## Tor Weblogs ########
 #
 ## Define descriptor sources
