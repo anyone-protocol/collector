@@ -353,9 +353,12 @@ BridgestrapStatsUrl = https://bridges.torproject.org/bridgestrap-collector
 ##
 # The following is a simple nginx configuration to run CollecTor.
 ##
+log_format default '[$time_iso8601] $remote_addr - $remote_user $request $status $body_bytes_sent $http_referer $http_user_agent $http_x_forwarded_for';
 server {
 
   root /var/www/collector/htdocs;
+  access_log /dev/stdout default; 
+  error_log /dev/stderr warn;
 
   # This option make sure that nginx will follow symlinks to the appropriate
   # CollecTor folders
