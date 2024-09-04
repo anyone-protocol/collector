@@ -40,7 +40,7 @@ job "collector-live" {
       }
 
       config {
-        image   = "ghcr.io/ator-development/collector:DEPLOY_TAG"
+        image   = "ghcr.io/anyone-protocol/collector:DEPLOY_TAG"
         force_pull = true
         volumes = [
           "local/collector.properties:/srv/collector/collector.properties:ro",
