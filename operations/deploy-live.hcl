@@ -41,7 +41,6 @@ job "collector-live" {
 
       config {
         image   = "ghcr.io/anyone-protocol/collector:DEPLOY_TAG"
-        force_pull = true
         volumes = [
           "local/collector.properties:/srv/collector/collector.properties:ro",
           "local/logs:/srv/collector/data/logs"
@@ -250,7 +249,7 @@ OnionPerfSyncOrigins = https://collector.torproject.org
 ## source name, e.g., SOURCE=first for the first URL below, SOURCE=second for
 ## the second, etc.:
 ## OnionPerfHosts = http://first.torproject.org/, http://second.torproject.org/
-OnionPerfHosts = http://5.78.90.106:9222/,http://5.161.108.187:9222/,http://49.13.145.234:9222/,https://collector.torproject.org/recent/onionperf/
+OnionPerfHosts = http://95.216.32.105:9222/,http://176.9.29.53:9222/,http://88.99.219.105:9222/,https://collector.torproject.org/recent/onionperf/
 ######## Tor Weblogs ########
 #
 ## Define descriptor sources
