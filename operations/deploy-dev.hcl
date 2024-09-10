@@ -41,7 +41,6 @@ job "collector-dev" {
 
       config {
         image   = "ghcr.io/anyone-protocol/collector:DEPLOY_TAG"
-        force_pull = true
         volumes = [
           "local/collector.properties:/srv/collector/collector.properties:ro",
           "local/logs:/srv/collector/data/logs"
