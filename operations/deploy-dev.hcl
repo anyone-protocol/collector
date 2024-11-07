@@ -3,6 +3,12 @@ job "collector-dev" {
   type        = "service"
   namespace   = "ator-network"
 
+  update {
+    max_parallel      = 1
+    healthy_deadline  = "15m"
+    progress_deadline = "20m"
+  }
+
   group "collector-dev-group" {
     count = 1
 
@@ -41,6 +47,7 @@ job "collector-dev" {
 
       config {
         image   = "ghcr.io/anyone-protocol/collector:DEPLOY_TAG"
+        image_pull_timeout = "15m"
         volumes = [
           "local/collector.properties:/srv/collector/collector.properties:ro",
           "local/logs:/srv/collector/data/logs"
