@@ -56,7 +56,7 @@ job "collector-dev" {
 
       resources {
         cpu    = 256
-        memory = 2048
+        memory = 3072
       }
 
       template {
