@@ -56,7 +56,7 @@ job "collector-live" {
 
       resources {
         cpu    = 256
-        memory = 4096
+        memory = 6144
       }
 
       template {
@@ -334,7 +334,7 @@ BridgestrapStatsUrl = https://bridges.torproject.org/bridgestrap-collector
 
       resources {
         cpu    = 256
-        memory = 512
+        memory = 1024
       }
 
       service {
