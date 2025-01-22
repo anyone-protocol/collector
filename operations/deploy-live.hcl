@@ -56,7 +56,7 @@ job "collector-live" {
 
       resources {
         cpu    = 256
-        memory = 6144
+        memory = 8192
       }
 
       template {
