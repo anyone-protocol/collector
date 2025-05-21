@@ -1,7 +1,7 @@
 job "collector-live" {
   datacenters = ["ator-fin"]
   type        = "service"
-  namespace   = "ator-network"
+  namespace   = "live-network"
 
   update {
     max_parallel      = 1
