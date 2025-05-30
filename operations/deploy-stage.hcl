@@ -3,6 +3,11 @@ job "collector-stage" {
   type        = "service"
   namespace   = "stage-network"
 
+  constraint {
+    attribute = "${meta.pool}"
+    value = "stage"
+  }
+
   update {
     max_parallel      = 1
     healthy_deadline  = "15m"
@@ -21,15 +26,26 @@ job "collector-stage" {
     network {
       mode = "bridge"
       port "http-port" {
-        static = 9100
         to     = 80
         host_network = "wireguard"
       }
     }
 
-    ephemeral_disk {
-      migrate = true
-      sticky  = true
+    service {     
+      name     = "collector-stage"
+      tags     = ["collector", "logging"]
+      port     = "http-port"
+      check {
+        name     = "collector nginx http server alive"
+        type     = "tcp"
+        interval = "10s"
+        timeout  = "10s"
+        address_mode = "alloc"
+        check_restart {
+          limit = 10
+          grace = "30s"
+        }
+      }
     }
 
     task "collector-jar-stage-task" {
@@ -55,8 +71,8 @@ job "collector-stage" {
       }
 
       resources {
-        cpu    = 256
-        memory = 3072
+        cpu    = 2048
+        memory = 4096
       }
 
       template {
@@ -333,24 +349,8 @@ BridgestrapStatsUrl = https://bridges.torproject.org/bridgestrap-collector
       }
 
       resources {
-        cpu    = 256
-        memory = 256
-      }
-
-      service {     
-        name     = "collector-stage"
-        tags     = ["collector", "logging"]
-        port     = "http-port"
-        check {
-          name     = "collector nginx http server alive"
-          type     = "tcp"
-          interval = "10s"
-          timeout  = "10s"
-          check_restart {
-            limit = 10
-            grace = "30s"
-          }
-        }
+        cpu    = 512
+        memory = 512
       }
 
       template {
