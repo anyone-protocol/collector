@@ -272,7 +272,7 @@ OnionPerfSyncOrigins = https://collector.torproject.org
 ## source name, e.g., SOURCE=first for the first URL below, SOURCE=second for
 ## the second, etc.:
 ## OnionPerfHosts = http://first.torproject.org/, http://second.torproject.org/
-OnionPerfHosts = http://95.216.32.105:9222/,http://176.9.29.53:9222/,http://88.99.219.105:9222/,https://collector.torproject.org/recent/onionperf/
+OnionPerfHosts = http://95.216.32.105:9222/,http://176.9.29.53:9222/,http://144.76.196.143:9222/,https://collector.torproject.org/recent/onionperf/
 ######## Tor Weblogs ########
 #
 ## Define descriptor sources
