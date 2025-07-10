@@ -37,11 +37,11 @@ job "collector-live" {
       tags = [
         "collector", "logging",
         "traefik-ops.enable=true",
-        "traefik-ops.http.routers.collector.rule=Host(`collector.ops.anyone.tech`)",
-        "traefik-ops.http.routers.collector.entrypoints=https",
-        "traefik-ops.http.routers.collector.tls=true",
-        "traefik-ops.http.routers.collector.tls.certresolver=anyoneresolver",
-        "traefik-ops.http.routers.collector.middlewares=oauth2-errors@consulcatalog,oauth2-proxy@consulcatalog",
+        "traefik-ops.http.routers.collector-live.rule=Host(`collector.ops.anyone.tech`)",
+        "traefik-ops.http.routers.collector-live.entrypoints=https",
+        "traefik-ops.http.routers.collector-live.tls=true",
+        "traefik-ops.http.routers.collector-live.tls.certresolver=anyoneresolver",
+        "traefik-ops.http.routers.collector-live.middlewares=oauth2-errors@consulcatalog,oauth2-proxy@consulcatalog",
       ]
       check {
         name     = "collector nginx http server alive"
