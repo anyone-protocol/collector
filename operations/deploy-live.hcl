@@ -33,8 +33,16 @@ job "collector-live" {
 
     service {
       name     = "collector-live"
-      tags     = ["collector", "logging"]
       port     = "http-port"
+      tags = [
+        "collector", "logging",
+        "traefik-ops.enable=true",
+        "traefik-ops.http.routers.collector.rule=Host(`collector.ops.anyone.tech`)",
+        "traefik-ops.http.routers.collector.entrypoints=https",
+        "traefik-ops.http.routers.collector.tls=true",
+        "traefik-ops.http.routers.collector.tls.certresolver=anyoneresolver",
+        "traefik-ops.http.routers.collector.middlewares=oauth2-errors@consulcatalog,oauth2-proxy@consulcatalog",
+      ]
       check {
         name     = "collector nginx http server alive"
         type     = "tcp"
